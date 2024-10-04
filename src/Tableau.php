@@ -90,5 +90,4 @@ class Tableau
         $json = json_encode($data);
         return json_decode($json, true);
     }
-
 }
