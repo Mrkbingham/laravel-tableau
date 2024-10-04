@@ -2,7 +2,6 @@
 
 namespace InterWorks\Tableau\Tests;
 
-use Dotenv\Dotenv;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use InterWorks\Tableau\TableauServiceProvider;
@@ -14,13 +13,13 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        // Load the .env.testing file
-        $dotenv = Dotenv::createImmutable(__DIR__ . '/..', '.env.testing');
-        $dotenv->load();
+        // make sure, our .env file is loaded
+        $this->app->useEnvironmentPath(__DIR__ . '/..');
+        $this->app->bootstrapWith([LoadEnvironmentVariables::class]);
+        parent::getEnvironmentSetUp($this->app);
 
-        // Set up factory names
         Factory::guessFactoryNamesUsing(function (string $modelName) {
-            return 'YourVendor\\Tableau\\Database\\Factories\\' . class_basename($modelName) . 'Factory';
+            return 'InterWorks\\Tableau\\Database\\Factories\\' . class_basename($modelName) . 'Factory';
         });
     }
 
