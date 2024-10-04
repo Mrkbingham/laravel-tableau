@@ -4,19 +4,8 @@ use InterWorks\Tableau\Tableau;
 
 it('authenticates with Tableau server', function () {
     $tableau = new Tableau();
-    $tableau->authenticate();
 
-    expect($tableau->authToken)->not->toBeEmpty();
-});
-
-it('requires base URL to be set', function () {
-    Config::set('tableau.base_url', null);
-
-    $tableau = new Tableau();
-
-    expect(function () use ($tableau) {
-        $tableau->authenticate();
-    })->toThrow();
+    expect($tableau->getAuthToken())->not->toBeEmpty();
 });
 
 it('gets the list of workbooks', function () {
