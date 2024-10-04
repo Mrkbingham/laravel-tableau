@@ -8,11 +8,11 @@ it('authenticates with Tableau server', function () {
     expect($tableau->getAuthToken())->not->toBeEmpty();
 });
 
-it('gets the list of workbooks', function () {
-    $tableau = new TableauService();
-    $tableau->authenticate();
+it('can sign out', function () {
+    $tableau = new Tableau();
 
-    $workbooks = $tableau->getWorkbooks();
+    // Sign out
+    $tableau->signOut();
 
-    expect($workbooks['workbooks']['workbook'])->toBeArray();
+    expect($tableau->getAuthToken())->toBeEmpty();
 });

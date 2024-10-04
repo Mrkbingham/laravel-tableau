@@ -18,8 +18,6 @@ class TableauServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-tableau')
             ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_laravel_tableau_table')
             ->hasCommand(TableauCommand::class);
     }
 }
