@@ -2,12 +2,19 @@
 
 namespace InterWorks\Tableau\Http;
 
+use Illuminate\Http\Client\Response;
 use InterWorks\Tableau\Exceptions\ApiException;
 
 class ErrorHandler
 {
     /**
      * Handle API errors and throw exceptions
+     *
+     * @param Response $response
+     *
+     * @throws ApiException
+     *
+     * @return void
      */
     public static function handle($response)
     {
