@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace InterWorks\Tableau\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class TableauCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-tableau';
 
     public $description = 'My command';
 
