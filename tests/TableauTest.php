@@ -1,6 +1,6 @@
 <?php
 
-use InterWorks\Tableau\Tableau;
+use InterWorks\Tableau\TableauAPI;
 
 it('returns the correct API version', function () {
     // Loop through the version map
@@ -8,7 +8,7 @@ it('returns the correct API version', function () {
         Config::set('tableau.version', $productVersion);
 
         // Create a new Tableau instance
-        $tableau = new Tableau();
+        $tableau = new TableauAPI();
 
         // Set the Tableau version
         $tableau->tableauVersion = $productVersion;
@@ -20,3 +20,19 @@ it('returns the correct API version', function () {
         expect($apiVersion)->toBe($apiVersion);
     }
 });
+
+it('can authenticate', function () {
+    $tableau = new TableauAPI();
+
+    expect($tableau->auth()->getToken())->not->toBeEmpty();
+});
+
+it('can sign out', function () {
+    $tableau = new TableauAPI();
+
+    // Sign out
+    $tableau->auth()->signOut();
+
+    expect($tableau->auth()->getToken())->toBeEmpty();
+});
+

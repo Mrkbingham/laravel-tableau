@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Config;
 class TableauAPI
 {
     protected $auth;
-    protected $token;
 
     protected $workbooks;
     protected $views;
@@ -24,15 +23,25 @@ class TableauAPI
     public function __construct()
     {
         // Initialize authentication
-        $this->auth = new TableauAuth();
-        $this->token = $this->auth->authenticate();
+        $this->auth  = new TableauAuth();
 
         // Initialize API resource classes
-        $this->workbooks = new Workbooks($this->token);
-        $this->views = new Views($this->token);
-        $this->datasources = new Datasources($this->token);
-        $this->users = new Users($this->token);
-        $this->notifications = new Notifications($this->token);
+        $this->workbooks = new Workbooks($this->auth);
+        // TODO: Build additional API resource classes
+        // $this->views = new Views($this->auth);
+        // $this->datasources = new Datasources($this->auth);
+        // $this->users = new Users($this->auth);
+        // $this->notifications = new Notifications($this->auth);
+    }
+
+    /**
+     * Get Auth methods
+     *
+     * @return TableauAuth
+     */
+    public function auth()
+    {
+        return $this->auth;
     }
 
     /**
@@ -73,14 +82,6 @@ class TableauAPI
     public function notifications()
     {
         return $this->notifications;
-    }
-
-    /**
-     * Sign out and invalidate token
-     */
-    public function signOut()
-    {
-        $this->auth->signOut();
     }
 
     /**
