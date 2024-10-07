@@ -2,18 +2,25 @@
 
 namespace InterWorks\Tableau\Http;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use InterWorks\Tableau\Http\ErrorHandler;
+use InterWorks\Tableau\Services\VersionService;
 
 class HttpClient
 {
-    protected $baseUrl;
+    protected $tableauUrl;
+    protected $apiVersion;
     protected $authToken;
 
-    public function __construct($baseUrl, $authToken = null)
+    public function __construct()
     {
-        $this->baseUrl   = $baseUrl;
-        $this->authToken = $authToken;
+        // Set the base URL and auth token
+        $this->tableauUrl = Config::get('tableau.url');
+
+        // Get the product version and set the API version
+        $productVersion = Config::get('tableau.product_version');
+        $this->apiVersion = VersionService::getApiVersion($productVersion);
     }
 
     /**
@@ -27,7 +34,7 @@ class HttpClient
     public function delete($endpoint)
     {
         $response = Http::withHeaders($this->getHeaders())
-            ->delete($this->baseUrl . $endpoint);
+            ->delete($this->getBaseURL() . $endpoint);
 
         return $this->handleResponse($response);
     }
@@ -38,9 +45,19 @@ class HttpClient
     public function get($endpoint, $queryParams = [])
     {
         $response = Http::withHeaders($this->getHeaders())
-            ->get($this->baseUrl . $endpoint, $queryParams);
+            ->get($this->getBaseURL() . $endpoint, $queryParams);
 
         return $this->handleResponse($response);
+    }
+
+    /**
+     * Return the base URL for the Tableau API
+     *
+     * @return string
+     */
+    public function getBaseURL()
+    {
+        return $this->tableauUrl . '/api/' . $this->apiVersion;
     }
 
     /**
@@ -92,7 +109,7 @@ class HttpClient
     public function post($endpoint, $body = [])
     {
         $response = Http::withHeaders($this->getHeaders())
-            ->post($this->baseUrl . $endpoint, $body);
+            ->post($this->getBaseURL() . $endpoint, $body);
 
         return $this->handleResponse($response);
     }
@@ -103,7 +120,7 @@ class HttpClient
     public function put($endpoint, $body = [])
     {
         $response = Http::withHeaders($this->getHeaders())
-            ->put($this->baseUrl . $endpoint, $body);
+            ->put($this->getBaseURL() . $endpoint, $body);
 
         return $this->handleResponse($response);
     }

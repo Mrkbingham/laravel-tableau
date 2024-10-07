@@ -2,20 +2,28 @@
 
 use Illuminate\Support\Facades\Http;
 use InterWorks\Tableau\Http\HttpClient;
+use InterWorks\Tableau\Services\VersionService;
 
 beforeEach(function () {
-    $this->baseUrl = 'https://tableau.com/api';
-    $this->token = 'test-token';
+    $this->tableauURL = env('TABLEAU_URL');
 
     // Initialize the HttpClient with base URL and token
-    $this->client = new HttpClient($this->baseUrl, $this->token);
+    $this->client = new HttpClient();
 });
 
 describe('HttpClient', function () {
+    it('can get the base URL', function () {
+        $expectedURL = $this->tableauURL . '/api/' . VersionService::getApiVersion(env('TABLEAU_PRODUCT_VERSION'));
+
+
+        // Assert the base URL is set correctly
+        expect($this->client->getBaseURL())->toBe($expectedURL);
+    });
+
     it('can send a GET request', function () {
         // Mock the GET request
         Http::fake([
-            'tableau.com/api/*' => Http::response([
+            $this->tableauURL . '/api/*' => Http::response([
                 'data' => ['item1', 'item2']
             ], 200)
         ]);
@@ -31,7 +39,7 @@ describe('HttpClient', function () {
     it('can send a POST request', function () {
         // Mock the POST request
         Http::fake([
-            'tableau.com/api/*' => Http::response([
+            $this->tableauURL . '/api/*' => Http::response([
                 'success' => true
             ], 201)
         ]);
@@ -49,7 +57,7 @@ describe('HttpClient', function () {
     it('can send a PUT request', function () {
         // Mock the PUT request
         Http::fake([
-            'tableau.com/api/*' => Http::response([
+            $this->tableauURL . '/api/*' => Http::response([
                 'updated' => true
             ], 200)
         ]);
@@ -67,7 +75,7 @@ describe('HttpClient', function () {
     it('can send a DELETE request', function () {
         // Mock the DELETE request
         Http::fake([
-            'tableau.com/api/*' => Http::response('', 204) // No content on success
+            $this->tableauURL . '/api/*' => Http::response('', 204) // No content on success
         ]);
 
         // Send a DELETE request
