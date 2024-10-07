@@ -29,14 +29,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Token Expiry
+    | Token Expiry (minutes)
     |--------------------------------------------------------------------------
     |
     | When you get the response, you parse the credentials token out of the
     | response and store it in your application. By default, the credentials
     | token is good for 240 minutes.  You can specify a different timeout value
     | for the token by calling the tsm configuration set command to change the
-    | wgserver.session.idle_limit setting..
+    | wgserver.session.idle_limit setting.
+    |
+    | @see https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_concepts_auth.htm#using_auth_token
     |
     */
     'token_expiry'    => env('TABLEAU_TOKEN_EXPIRY', 240),

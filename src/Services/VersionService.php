@@ -2,6 +2,8 @@
 
 namespace InterWorks\Tableau\Services;
 
+use Exception;
+
 class VersionService
 {
     public static $apiVersionMap = [
@@ -50,6 +52,9 @@ class VersionService
      */
     public static function getApiVersion(string $tableauVersion): string
     {
+        if (!isset(self::$apiVersionMap[$tableauVersion])) {
+            throw new Exception('Unknown Tableau version: ' . $tableauVersion);
+        }
         return self::$apiVersionMap[$tableauVersion];
     }
 }
