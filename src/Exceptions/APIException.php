@@ -6,18 +6,20 @@ use Exception;
 
 class ApiException extends Exception
 {
+    /** @var integer */
     protected $statusCode;
+    /** @var string */
     protected $errorMessage;
 
     /**
      * ApiException constructor.
      *
-     * @param string|null $message
-     * @param int $statusCode
+     * @param string|null $message    The error message for the API exception.
+     * @param integer     $statusCode The status code for the API exception.
      *
      * @return void
      */
-    public function __construct(string $message = null, int $statusCode = 500)
+    public function __construct(?string $message = null, int $statusCode = 500)
     {
         // Set default values if not provided
         $this->statusCode = $statusCode;
@@ -40,7 +42,7 @@ class ApiException extends Exception
     /**
      * Get the status code for the API exception
      *
-     * @return int
+     * @return integer
      */
     public function getStatusCode()
     {
