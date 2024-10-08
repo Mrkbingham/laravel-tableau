@@ -1,5 +1,6 @@
 <?php
 
+use Exception;
 use Illuminate\Support\Facades\Http;
 use InterWorks\Tableau\Http\HttpClient;
 use InterWorks\Tableau\Services\VersionService;
@@ -83,6 +84,77 @@ describe('HttpClient', function () {
 
         // Assert the request was successful
         expect($response->successful())->toBeTrue();
+    });
+
+    it('can validate parameters', function () {
+        // Define the expected parameters
+        $allowedParameters = [
+            'includeExtract' => 'boolean',
+        ];
+
+        // Define the valid parameters
+        $validParams = [
+            'includeExtract' => true,
+        ];
+
+        // Define the invalid parameters
+        $invalidParams = [
+            'includeExtract' => 'true',
+        ];
+
+        // Assert that the valid parameters pass validation (no exceptions are thrown)
+        HttpClient::validateParameters($allowedParameters, $validParams);
+
+        // No assertions are expected to be performed
+        expectNotToPerformAssertions();
+    });
+
+    it('throws an exception for invalid parameters', function () {
+        // Define the expected parameters
+        $allowedParameters = [
+            'includeExtract' => 'boolean',
+        ];
+        // Set an invalid parameter type
+        $invalidAllowedParameters = [
+            'includeExtract' => 'bool', // Should be boolean
+        ];
+
+        // Define the invalid parameters that violate the expected type
+        $parametersWithInvalidType = [
+            'includeExtract' => 'true',
+        ];
+
+        // Define the invalid parameters that violate the expected type
+        $parametersWithInvalidKey = [
+            'fakeParam' => 'boolean',
+        ];
+
+        // Assert that the invalid parameters fail validation (an exception is thrown)
+        expect(function () use ($allowedParameters, $parametersWithInvalidType) {
+            HttpClient::validateParameters($allowedParameters, $parametersWithInvalidType);
+        })->toThrow(
+            Exception::class,
+            'Invalid type for parameter: includeExtract',
+        );
+
+        // Assert that the invalid parameter types fail validation (an exception is thrown)
+        expect(function () use ($invalidAllowedParameters, $allowedParameters) {
+            HttpClient::validateParameters($invalidAllowedParameters, $allowedParameters);
+        })->toThrow(
+            Exception::class,
+            'Invalid parameter type(s) in allowedParameters: ' . json_encode(array_values($invalidAllowedParameters))
+        );
+
+        // Assert that the invalid parameter types fail validation (an exception is thrown)
+        $invalidParameterRules = [
+            'includeExtract' => 'bool', // Should be "boolean"
+        ];
+        expect(function () use ($allowedParameters, $parametersWithInvalidKey) {
+            HttpClient::validateParameters($allowedParameters, $parametersWithInvalidKey);
+        })->toThrow(
+            Exception::class,
+            'Invalid parameter: fakeParam',
+        );
     });
 });
 

@@ -24,6 +24,20 @@ class HttpClient
      */
     protected $authToken;
 
+    /** @var array */
+    protected static $allowedParameterTypes = [
+        "boolean",
+        "integer",
+        "double", // (for historical reasons "double" is returned in case of a float, and not simply "float")
+        "string",
+        "array",
+        "object",
+        "resource",
+        // "resource (closed)" as of PHP 7.2.0
+        "NULL",
+        "unknown type",
+    ];
+
     /**
      * @var array $openEndpoints Endpoints that do not require a token
      */
@@ -141,8 +155,13 @@ class HttpClient
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
 
+        // Add POST requests are wrapped in <tsRequest> tags
+        $payload = [
+            'tsRequest' => $body,
+        ];
+
         $response = Http::withHeaders($this->getHeaders())
-            ->post($this->getBaseURL() . $endpoint, $body);
+            ->post($this->getBaseURL() . $endpoint, $payload);
 
         return $this->handleResponse($response);
     }
@@ -187,6 +206,38 @@ class HttpClient
             throw new Exception(
                 'An auth token is required for the endpoint' . $endpoint . ', use the authenticate() method'
             );
+        }
+    }
+
+    /**
+     * Validates the parameters to ensure only allowed parameters are passed, and the types are correct
+     *
+     * @param array $allowedParameters The allowed parameters/rules for the endpoint.
+     * @param array $parameters The parameters to validate.
+     *
+     * @return void
+     */
+    public static function validateParameters(array $allowedParameters, array $parameters)
+    {
+        // Get the values from the allowed parameters array for this endpoint
+        $allowedTypes = array_values($allowedParameters);
+
+        // Make sure the values are all present in globally defined $allowedParameterTypes
+        $unsupportedTypes = array_diff($allowedTypes, self::$allowedParameterTypes);
+        if (count($unsupportedTypes) > 0) {
+            throw new Exception('Invalid parameter type(s) in allowedParameters: ' . json_encode($unsupportedTypes));
+        }
+
+        foreach ($parameters as $key => $value) {
+            // Make sure the parameter is in the allowed list
+            if (!array_key_exists($key, $allowedParameters)) {
+                throw new Exception('Invalid parameter: ' . $key);
+            }
+
+            // Make sure the parameter type is correct
+            if (gettype($value) !== $allowedParameters[$key]) {
+                throw new Exception('Invalid type for parameter: ' . $key);
+            }
         }
     }
 }
