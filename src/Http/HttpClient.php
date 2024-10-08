@@ -3,6 +3,7 @@
 namespace InterWorks\Tableau\Http;
 
 use Exception;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use InterWorks\Tableau\Http\ErrorHandler;
@@ -24,6 +25,14 @@ class HttpClient
      */
     protected $authToken;
 
+    /**
+     * @var array $openEndpoints Endpoints that do not require a token
+     */
+    protected $openEndpoints = [
+        '/auth/signin',
+        'serverinfo',
+    ];
+
     /** @var array */
     protected static $allowedParameterTypes = [
         "boolean",
@@ -39,13 +48,12 @@ class HttpClient
     ];
 
     /**
-     * @var array $openEndpoints Endpoints that do not require a token
+     * HttpClient constructor.
+     *
+     * @param string|null $authToken The auth token to use for requests.
+     *
+     * @return void
      */
-    protected $openEndpoints = [
-        '/auth/signin',
-        'serverinfo',
-    ];
-
     public function __construct(?string $authToken = null)
     {
         // Set the base URL and auth token
@@ -64,12 +72,11 @@ class HttpClient
     /**
      * Send a DELETE request
      *
+     * @param string $endpoint The endpoint to send the request to.
      *
-     * @param string $endpoint
-     *
-     * @return \Illuminate\Http\Client\Response $response
+     * @return array|boolean
      */
-    public function delete($endpoint)
+    public function delete(string $endpoint)
     {
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
@@ -82,8 +89,13 @@ class HttpClient
 
     /**
      * Send a GET request
+     *
+     * @param string $endpoint    The endpoint to send the request to.
+     * @param array  $queryParams The query parameters to send with the request.
+     *
+     * @return array|boolean
      */
-    public function get($endpoint, $queryParams = [])
+    public function get(string $endpoint, array $queryParams = [])
     {
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
@@ -105,71 +117,42 @@ class HttpClient
     }
 
     /**
-     * Generate the necessary headers, including auth token if available
-     */
-    protected function getHeaders()
-    {
-        $headers = [
-            'Accept'       => 'application/json',
-            'Content-Type' => 'application/json',
-        ];
-
-        if ($this->authToken) {
-            $headers['X-Tableau-Auth'] = $this->authToken;
-        }
-
-        return $headers;
-    }
-
-    /**
-     * Handle response using the ErrorHandler
+     * Send a POST request
      *
-     * This method will return the parsed response or handle any errors
+     * @param string $endpoint The endpoint to send the request to.
+     * @param array  $body     The body of the request.
      *
-     * @param \Illuminate\Http\Client\Response $response
+     * @throws Exception If the first key in the body array is 'tsRequest', a common error.
      *
      * @return array|boolean
      */
-    protected function handleResponse($response)
-    {
-        if (!$response->successful()) {
-            return ErrorHandler::handle($response);
-        }
-
-        // Check the status code of the response
-        $statusCode = $response->status();
-        if ($statusCode === 204) {
-            // Return the full response when a DELETE was successful
-            return $response;
-        } else {
-            // Parse the response
-            return ResponseParser::parse($response);
-        }
-    }
-
-    /**
-     * Send a POST request
-     */
-    public function post($endpoint, $body = [])
+    public function post(string $endpoint, array $body): array|bool
     {
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
 
-        // Add POST requests are wrapped in <tsRequest> tags
-        $payload = [
-            'tsRequest' => $body,
-        ];
+        // Make sure the first array key is NOT 'tsRequest'
+        if (array_key_first($body) === 'tsRequest') {
+            throw new Exception('The first key in the body array cannot be "tsRequest"');
+        }
 
         $response = Http::withHeaders($this->getHeaders())
-            ->post($this->getBaseURL() . $endpoint, $payload);
+            ->post($this->getBaseURL() . $endpoint, $body);
 
         return $this->handleResponse($response);
     }
 
     /**
      * Send a PUT request
+     *
+     * @param string $endpoint The endpoint to send the request to.
+     * @param array  $body     The body of the request.
+     *
+     * @throws Exception If the first key in the body array is 'tsRequest', a common error.
+     *
+     * @return array|boolean
      */
-    public function put($endpoint, $body = [])
+    public function put(string $endpoint, array $body = []): array|bool
     {
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
@@ -183,7 +166,7 @@ class HttpClient
     /**
      * Sets the auth token
      *
-     * @param string $token
+     * @param string $token The auth token to set.
      *
      * @return void
      */
@@ -193,27 +176,13 @@ class HttpClient
     }
 
     /**
-     * Validates the endpoint to determine if it requires an auth token
-     *
-     * @param string $endpoint
-     */
-    protected function validateEndpoint($endpoint)
-    {
-        if (
-            !in_array($endpoint, $this->openEndpoints)
-            && !$this->authToken
-        ) {
-            throw new Exception(
-                'An auth token is required for the endpoint' . $endpoint . ', use the authenticate() method'
-            );
-        }
-    }
-
-    /**
      * Validates the parameters to ensure only allowed parameters are passed, and the types are correct
      *
-     * @param array $allowedParameters The allowed parameters/rules for the endpoint.
-     * @param array $parameters The parameters to validate.
+     * @param array $allowedParameters  The allowed parameters/rules for the endpoint.
+     * @param array $parameters         The parameters to validate.
+     * @param array $requiredParameters The required parameters for the endpoint.
+     *
+     * @throws Exception If an error occurs.
      *
      * @return void
      */
@@ -247,6 +216,72 @@ class HttpClient
             if (gettype($value) !== $allowedParameters[$key]) {
                 throw new Exception('Invalid type for parameter: ' . $key);
             }
+        }
+    }
+
+    /**
+     * Generate the necessary headers, including auth token if available
+     *
+     * @return array
+     */
+    protected function getHeaders()
+    {
+        $headers = [
+            'Accept'       => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if ($this->authToken) {
+            $headers['X-Tableau-Auth'] = $this->authToken;
+        }
+
+        return $headers;
+    }
+
+    /**
+     * Handle response using the ErrorHandler
+     *
+     * This method will return the parsed response or handle any errors
+     *
+     * @param Response $response The response object.
+     *
+     * @return array|boolean
+     */
+    protected function handleResponse(Response $response)
+    {
+        if (!$response->successful()) {
+            return ErrorHandler::handle($response);
+        }
+
+        // Check the status code of the response
+        $statusCode = $response->status();
+        if ($statusCode === 204) {
+            // Return the full response when a DELETE was successful
+            return $response;
+        } else {
+            // Parse the response
+            return ResponseParser::parse($response);
+        }
+    }
+
+    /**
+     * Validates the endpoint to determine if it requires an auth token
+     *
+     * @param string $endpoint The endpoint to validate.
+     *
+     * @throws Exception If an error occurs.
+     *
+     * @return void
+     */
+    protected function validateEndpoint(string $endpoint)
+    {
+        if (
+            !in_array($endpoint, $this->openEndpoints)
+            && !$this->authToken
+        ) {
+            throw new Exception(
+                'An auth token is required for the endpoint' . $endpoint . ', use the authenticate() method'
+            );
         }
     }
 }
