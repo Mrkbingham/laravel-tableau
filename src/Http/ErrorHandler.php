@@ -18,36 +18,31 @@ class ErrorHandler
      */
     public static function handle(Response $response)
     {
-        // Get the status code and body
+        // Get the status code
         $statusCode = $response->status();
 
-        // Store the path - only add it to non 401/403 errors
-        $path = $response->effectiveUri()->getPath();
-
-        // Parse the error message
-        if ($statusCode === 400) {
-            $errorMessage = self::parseTableauError($response);
-            throw new ApiException($errorMessage, 400);
-        }
-
+        // Parse the error message based on the status code
         switch ($statusCode) {
             case 400:
-                $errorMessage = "Bad Request to $path. Response: " . $response->body();
-                throw new ApiException($errorMessage, 400);
+                $errorMessage = self::parseTableauError($response);
+                throw new ApiException("Bad Request: $errorMessage", 400);
             case 401:
                 $errorMessage = self::parseTableauError($response);
-                throw new ApiException('Unauthorized: ' . $errorMessage, 401);
+                throw new ApiException("Unauthorized: $errorMessage", 401);
             case 403:
                 $errorMessage = self::parseTableauError($response);
-                throw new ApiException('Forbidden: ' . $errorMessage, 403);
+                throw new ApiException("Forbidden: $errorMessage", 403);
             case 404:
+                $path = $response->effectiveUri()->getPath();
                 $errorMessage = "Resource Not Found: $path. Response: " . $response->body();
                 throw new ApiException($errorMessage, 404);
             case 500:
+                $path = $response->effectiveUri()->getPath();
                 $errorMessage = "Internal Server Error: $path. Response: " . $response->body();
                 throw new ApiException($errorMessage, 500);
             default:
-                throw new ApiException('API Error: ' . $response->body(), $statusCode);
+                $errorMessage = "API Error: " . $response->body();
+                throw new ApiException($errorMessage, $statusCode);
         }
     }
 
@@ -62,7 +57,7 @@ class ErrorHandler
     {
         $body = $response->json();
         if (!isset($body['error'])) {
-            return 'Unknown Tableau Error.';
+            return 'Unknown Tableau Error';
         }
 
         $errorData = $body['error'];
