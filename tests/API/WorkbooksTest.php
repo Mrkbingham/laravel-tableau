@@ -67,7 +67,6 @@ describe('WorkbooksTest', function () {
         $workbookID = env('TABLEAU_SERVER_WORKBOOK_ID');
         $workbookName = env('TABLEAU_SERVER_WORKBOOK_NAME');
         $response = $this->tableau->workbooks()->getWorkbookByContentURL($workbookContentURL);
-        dd($response);
 
         // Assert the response contains the correct workbook data
         expect($response)->toHaveKey('workbook');
