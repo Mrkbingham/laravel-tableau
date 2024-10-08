@@ -2,6 +2,7 @@
 
 namespace InterWorks\Tableau\Auth;
 
+use Exception;
 use Illuminate\Support\Facades\Config;
 use InterWorks\Tableau\Enums\AuthType;
 use InterWorks\Tableau\Http\HttpClient;
@@ -170,11 +171,20 @@ class TableauAuth
     /**
      * Sets the expiration time of the token
      *
+     * @throws Exception If the token expiration time is not set in the configuration file.
+     *
      * @return void
      */
     public function setTokenExpiration(): void
     {
-        $this->tokenExpiration = time() + Config::get('tableau.token_expiration') * 60;
+        // Make sure the config is set
+        $expirationTimeInMinutes = Config::get('tableau.token_expiry');
+        if (empty($expirationTimeInMinutes)) {
+            throw new Exception('Token expiration time not set in the configuration file.');
+        }
+
+        // Set the expiration time
+        $this->tokenExpiration = time() + ($expirationTimeInMinutes * 60);
     }
 
     /**
@@ -184,6 +194,6 @@ class TableauAuth
      */
     protected function isTokenExpired(): bool
     {
-        return time() >= $this->getTokenExpiration();
+        return time() >= $this->tokenExpiration;
     }
 }
