@@ -19,12 +19,12 @@ return [
     |
     */
     'credentials'     => [
-        // Username and password auth (not required if using PAT)
-        'username'   => env('TABLEAU_USERNAME', ''),
-        'password'   => env('TABLEAU_PASSWORD', ''),
         // PAT auth (not required if using username and password)
         'pat_name'   => env('TABLEAU_PAT_NAME', ''),
         'pat_secret' => env('TABLEAU_PAT_SECRET', ''),
+        // Username and password auth (not required if using PAT)
+        'username'   => env('TABLEAU_USERNAME', ''),
+        'password'   => env('TABLEAU_PASSWORD', ''),
     ],
 
     /*

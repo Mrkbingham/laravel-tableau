@@ -10,6 +10,9 @@ class TableauAuth
 {
     /** @var HttpClient */
     protected $client;
+    /** @var AuthType */
+    protected $authType;
+
     /** @var string */
     protected $username;
     /** @var string */
@@ -31,17 +34,20 @@ class TableauAuth
      *
      * @return void
      */
-    public function __construct(AuthType $authType = AuthType::USERNAME, ?string $siteContentURL = null)
+    public function __construct(AuthType $authType = AuthType::PAT, ?string $siteContentURL = null)
     {
-        if ($authType === AuthType::USERNAME) {
-            // Username and password auth
-            $this->username = Config::get('tableau.credentials.username');
-            $this->password = Config::get('tableau.credentials.password');
-        } else {
+        if ($authType === AuthType::PAT) {
             // PAT
             $this->patName = Config::get('tableau.credentials.pat_name');
             $this->patSecret = Config::get('tableau.credentials.pat_secret');
+        } else {
+            // Username and password auth
+            $this->username = Config::get('tableau.credentials.username');
+            $this->password = Config::get('tableau.credentials.password');
         }
+        $this->authType = $authType;
+
+        // Set the site content URL
         $this->siteContentURL = $siteContentURL ?? Config::get('tableau.site_name');
 
         // Initialize the HTTP client
@@ -63,18 +69,7 @@ class TableauAuth
             return;
         }
 
-        // XML payload for the authentication request
-        $payload = [
-            'credentials' => [
-                'name'     => $this->username,
-                'password' => $this->password,
-                'site'     => [
-                    'contentUrl' => $this->siteContentURL
-                ]
-            ]
-        ];
-
-        $response = $this->client->post('/auth/signin', $payload);
+        $response = $this->client->post('/auth/signin', $this->getAuthPayload());
 
         // Extract the token and set the token expiration
         $this->token = $response['credentials']['token'] ?? null;
@@ -95,6 +90,38 @@ class TableauAuth
     public function client(): HttpClient
     {
         return $this->client;
+    }
+
+    /**
+     * Generate the payload for the authentication request
+     *
+     * @return array
+     */
+    protected function getAuthPayload(): array
+    {
+        if ($this->authType === AuthType::PAT) {
+            // PAT auth
+            return [
+                'credentials' => [
+                    'personalAccessTokenName'   => $this->patName,
+                    'personalAccessTokenSecret' => $this->patSecret,
+                    'site'                      => [
+                        'contentUrl' => $this->siteContentURL
+                    ]
+                ]
+            ];
+        } else {
+            // XML payload for the authentication request
+            return [
+                'credentials' => [
+                    'name'     => $this->username,
+                    'password' => $this->password,
+                    'site'     => [
+                        'contentUrl' => $this->siteContentURL
+                    ]
+                ]
+            ];
+        }
     }
 
     /**

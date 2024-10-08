@@ -1,6 +1,5 @@
 <?php
 
-use Exception;
 use Illuminate\Support\Facades\Http;
 use InterWorks\Tableau\Http\HttpClient;
 use InterWorks\Tableau\Services\VersionService;
