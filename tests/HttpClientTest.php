@@ -5,13 +5,14 @@ use InterWorks\Tableau\Http\HttpClient;
 use InterWorks\Tableau\Services\VersionService;
 
 beforeEach(function () {
-    $this->tableauURL = env('TABLEAU_URL');
+    $this->tableauURL = Config::get('tableau.url');
 
-    // Initialize the HttpClient with base URL and token
+    // Initialize the HttpClient (uses the config to set the base URL)
     $this->client = new HttpClient();
+    $this->client->setAuthToken('fake-token');
 });
 
-describe('HttpClient', function () {
+describe('HttpClientTest', function () {
     it('can get the base URL', function () {
         $expectedURL = $this->tableauURL . '/api/' . VersionService::getApiVersion(env('TABLEAU_PRODUCT_VERSION'));
 
