@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use InterWorks\Tableau\Enums\AuthType;
-use InterWorks\Tableau\TableauAPI;
 use InterWorks\Tableau\Exceptions\ApiException;
+use InterWorks\Tableau\TableauAPI;
 
 beforeEach(function () {
     $this->tableauURL = env('TABLEAU_URL');
@@ -33,7 +33,7 @@ describe('TableauAuthTest', function() {
 
         // Expect the ApiException to be thrown
         $this->expectException(ApiException::class);
-        $this->expectExceptionMessage('Invalid credentials');
+        $this->expectExceptionMessage('Unauthorized: (401001)');
         $this->expectExceptionCode(401);
 
         new TableauAPI(AuthType::USERNAME);
