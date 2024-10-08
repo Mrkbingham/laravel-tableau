@@ -1,6 +1,5 @@
 <?php
 
-use InterWorks\Tableau\Services\VersionService;
 use InterWorks\Tableau\TableauAPI;
 
 describe('TableauAPITest', function() {

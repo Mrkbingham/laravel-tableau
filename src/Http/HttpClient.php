@@ -124,9 +124,9 @@ class HttpClient
      *
      * @throws Exception If the first key in the body array is 'tsRequest', a common error.
      *
-     * @return array|boolean
+     * @return array|boolean|Response
      */
-    public function post(string $endpoint, array $body): array|bool
+    public function post(string $endpoint, array $body): array|bool|Response
     {
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
