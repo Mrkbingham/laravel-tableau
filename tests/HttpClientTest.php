@@ -98,15 +98,18 @@ describe('HttpClient', function () {
         ];
 
         // Define the invalid parameters
-        $invalidParams = [
-            'includeExtract' => 'true',
-        ];
+        $requiredParams = ['includeExtract'];
 
         // Assert that the valid parameters pass validation (no exceptions are thrown)
         HttpClient::validateParameters($allowedParameters, $validParams);
 
-        // No assertions are expected to be performed
-        expectNotToPerformAssertions();
+        // Throws an exception when passing in required parameters
+        expect(function () use ($allowedParameters, $requiredParams) {
+            HttpClient::validateParameters($allowedParameters, $requiredParams, $requiredParams);
+        })->toThrow(
+            Exception::class,
+            'Missing required parameter(s): ' . json_encode($requiredParams)
+        );
     });
 
     it('throws an exception for invalid parameters', function () {
@@ -142,7 +145,7 @@ describe('HttpClient', function () {
             HttpClient::validateParameters($invalidAllowedParameters, $allowedParameters);
         })->toThrow(
             Exception::class,
-            'Invalid parameter type(s) in allowedParameters: ' . json_encode(array_values($invalidAllowedParameters))
+            'Unsupported parameter type: bool',
         );
 
         // Assert that the invalid parameter types fail validation (an exception is thrown)

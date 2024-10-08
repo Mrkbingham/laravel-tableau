@@ -217,15 +217,24 @@ class HttpClient
      *
      * @return void
      */
-    public static function validateParameters(array $allowedParameters, array $parameters)
-    {
+    public static function validateParameters(
+        array $allowedParameters,
+        array $parameters,
+        array $requiredParameters = []
+    ) {
         // Get the values from the allowed parameters array for this endpoint
         $allowedTypes = array_values($allowedParameters);
 
         // Make sure the values are all present in globally defined $allowedParameterTypes
-        $unsupportedTypes = array_diff($allowedTypes, self::$allowedParameterTypes);
-        if (count($unsupportedTypes) > 0) {
-            throw new Exception('Invalid parameter type(s) in allowedParameters: ' . json_encode($unsupportedTypes));
+        $unsupportedTypes = collect($allowedTypes)->diff(self::$allowedParameterTypes);
+        if ($unsupportedTypes->isNotEmpty()) {
+            throw new Exception('Unsupported parameter type: ' . $unsupportedTypes->first());
+        }
+
+        // Check for missing required parameters
+        $missingParameters = collect($requiredParameters)->diff(array_keys($parameters));
+        if ($missingParameters->isNotEmpty()) {
+            throw new Exception('Missing required parameter(s): ' . json_encode($missingParameters->toArray()));
         }
 
         foreach ($parameters as $key => $value) {
