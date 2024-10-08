@@ -2,27 +2,47 @@
 
 namespace InterWorks\Tableau\Auth;
 
-use InterWorks\Tableau\Http\HttpClient;
 use Illuminate\Support\Facades\Config;
-use InterWorks\Tableau\Http\ResponseParser;
-use InterWorks\Tableau\Services\VersionService;
+use InterWorks\Tableau\Enums\AuthType;
+use InterWorks\Tableau\Http\HttpClient;
 
 class TableauAuth
 {
+    /** @var HttpClient */
     protected $client;
+    /** @var string */
     protected $username;
+    /** @var string */
     protected $password;
-    protected $site;
+    /** @var string */
+    protected $siteContentURL;
+    /** @var string */
     protected $token;
+    /** @var integer */
     protected $tokenExpiration;
+    /** @var string */
     protected $apiVersion;
 
-    public function __construct($username = null, $password = null, $site = null)
+    /**
+     * TableauAuth constructor.
+     *
+     * @param AuthType    $authType       The type of authentication to use (e.g., 'pat', 'username').
+     * @param string|null $siteContentURL The Tableau site name.
+     *
+     * @return void
+     */
+    public function __construct(AuthType $authType = AuthType::USERNAME, ?string $siteContentURL = null)
     {
-        // Use either the passed parameters or fall back to config values
-        $this->username = $username ?? Config::get('tableau.credentials.username');
-        $this->password = $password ?? Config::get('tableau.credentials.password');
-        $this->site     = $site ?? Config::get('tableau.site_name');
+        if ($authType === AuthType::USERNAME) {
+            // Username and password auth
+            $this->username = Config::get('tableau.credentials.username');
+            $this->password = Config::get('tableau.credentials.password');
+        } else {
+            // PAT
+            $this->patName = Config::get('tableau.credentials.pat_name');
+            $this->patSecret = Config::get('tableau.credentials.pat_secret');
+        }
+        $this->siteContentURL = $siteContentURL ?? Config::get('tableau.site_name');
 
         // Initialize the HTTP client
         $this->client = new HttpClient();
@@ -46,10 +66,10 @@ class TableauAuth
         // XML payload for the authentication request
         $payload = [
             'credentials' => [
-                'name' => $this->username,
+                'name'     => $this->username,
                 'password' => $this->password,
-                'site' => [
-                    'contentUrl' => $this->site
+                'site'     => [
+                    'contentUrl' => $this->siteContentURL
                 ]
             ]
         ];
@@ -62,6 +82,9 @@ class TableauAuth
 
         // Set the token on the client
         $this->client->setAuthToken($this->token);
+
+        // Set the site ID
+        $this->siteID = $response['credentials']['site']['id'];
     }
 
     /**
@@ -85,6 +108,26 @@ class TableauAuth
     }
 
     /**
+     * Returns the current site (Tableau site name, NOT id)
+     *
+     * @return string
+     */
+    public function getSiteContentURL(): string
+    {
+        return $this->siteContentURL;
+    }
+
+    /**
+     * Returns the Site ID (the Tableau site ID, NOT the site name)
+     *
+     * @return string
+     */
+    public function getSiteID(): string
+    {
+        return $this->siteID;
+    }
+
+    /**
      * Sign out from Tableau Server and invalidate the token
      *
      * @return void
@@ -92,7 +135,7 @@ class TableauAuth
     public function signOut(): void
     {
         if ($this->token) {
-            $this->client->post('/auth/signout');
+            $this->client->post('/auth/signout', []);
             $this->token = null;  // Invalidate the token
         }
     }
@@ -110,7 +153,7 @@ class TableauAuth
     /**
      * Check if the current token has expired
      *
-     * @return bool
+     * @return boolean
      */
     protected function isTokenExpired(): bool
     {
