@@ -60,3 +60,7 @@ jobs:
           # Auth with Username
           TABLEAU_USERNAME: ${{ vars.TABLEAU_USERNAME }}
           TABLEAU_PASSWORD: ${{ secrets.TABLEAU_PASSWORD }}
+          # Workbook variables
+          TABLEAU_WORKBOOK_CONTENT_URL: ${{ vars.TABLEAU_WORKBOOK_CONTENT_URL }}
+          TABLEAU_WORKBOOK_ID: ${{ vars.TABLEAU_WORKBOOK_ID }}
+          TABLEAU_WORKBOOK_NAME: ${{ vars.TABLEAU_WORKBOOK_NAME }}
