@@ -51,7 +51,7 @@ jobs:
         run: composer show -D
 
       - name: Tableau Server Tests | Server Admin / PAT Auth
-        uses: ./.github/workflows/pest_tests_template.yml
+        uses: ./.github/workflows/pest_tests_template
         with:
           environment: "InterWorks Tableau Server"
           TABLEAU_URL: ${{ secrets.TABLEAU_URL }}
