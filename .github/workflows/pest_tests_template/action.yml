@@ -27,6 +27,7 @@ runs:
   steps:
     - name: Pest Tests - ${{ inputs.ENVIRONMENT }}
       run: vendor/bin/pest --ci
+      shell: bash
       env:
         TABLEAU_URL: ${{ inputs.TABLEAU_URL }}
         TABLEAU_PRODUCT_VERSION: ${{ inputs.TABLEAU_PRODUCT_VERSION }}
