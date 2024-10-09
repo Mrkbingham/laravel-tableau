@@ -374,7 +374,7 @@ class Workbooks
     public function getWorkbookByContentURL(string $contentURL, array $parameters = [])
     {
         // Setup ?key=contentUrl query parameter
-        $parameters['key'] = ['contentUrl'];
+        $parameters['key'] = 'contentUrl';
 
         // Make the request
         $endpoint = "/sites/{$this->siteID}/workbooks/{$contentURL}";
