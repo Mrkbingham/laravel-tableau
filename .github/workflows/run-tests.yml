@@ -50,5 +50,23 @@ jobs:
       - name: List Installed Dependencies
         run: composer show -D
 
-      - name: Execute tests
+      - name: Tableau Server Tests | Server Admin / PAT Auth
         run: vendor/bin/pest --ci
+        env:
+          TABLEAU_URL: ${{ secrets.TABLEAU_SERVER_URL }}
+          TABLEAU_PRODUCT_VERSION: ${{ secrets.TABLEAU_SERVER_USERNAME }}
+          TABLEAU_PAT_NAME: ${{ secrets.TABLEAU_SERVER_PAT_NAME }}
+          TABLEAU_PAT_SECRET: ${{ secrets.TABLEAU_SERVER_PAT_SECRET }}
+
+      - name: Tableau Server Tests | Server Admin / Username and Password Auth
+        run: vendor/bin/pest --ci
+        env:
+          TABLEAU_URL: ${{ secrets.TABLEAU_SERVER_URL }}
+          TABLEAU_PRODUCT_VERSION: ${{ secrets.TABLEAU_SERVER_USERNAME }}
+          TABLEAU_USERNAME: ${{ secrets.TABLEAU_SERVER_ADMIN_USERNAME }}
+          TABLEAU_PASSWORD: ${{ secrets.TABLEAU_SERVER_ADMIN_PASSWORD }}
+
+
+      # TODO: Add cloud tests
+      # - name: Tableau Cloud Tests | Site Admin / PAT Auth
+      #   run: vendor/bin/pest --ci
