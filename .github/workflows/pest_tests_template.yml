@@ -6,19 +6,19 @@ on:
       environment:
         required: true
         type: string
-      tableau_url:
+      TABLEAU_URL:
         required: true
         type: string
         description: 'The Tableau Server URL'
-      tableau_product_version:
+      TABLEAU_PRODUCT_VERSION:
         required: true
         type: string
         description: 'The Tableau Product Version'
-      tableau_username:
+      TABLEAU_USERNAME:
         required: true
         type: string
         description: 'The Tableau Server Admin Username'
-      tableau_password:
+      TABLEAU_PASSWORD:
         required: true
         type: string
         description: 'The Tableau Server Admin Password'
