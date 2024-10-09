@@ -1,6 +1,6 @@
 <?php
 
-namespace Vendor\TableauApi\Http;
+namespace Vendor\TableauAPI\Http;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;

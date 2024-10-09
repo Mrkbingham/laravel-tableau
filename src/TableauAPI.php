@@ -3,11 +3,11 @@
 namespace InterWorks\Tableau;
 
 use Illuminate\Support\Facades\Config;
-use InterWorks\Tableau\Api\Datasources;
-use InterWorks\Tableau\Api\Notifications;
-use InterWorks\Tableau\Api\Users;
-use InterWorks\Tableau\Api\Views;
-use InterWorks\Tableau\Api\Workbooks;
+use InterWorks\Tableau\API\Datasources;
+use InterWorks\Tableau\API\Notifications;
+use InterWorks\Tableau\API\Users;
+use InterWorks\Tableau\API\Views;
+use InterWorks\Tableau\API\Workbooks;
 use InterWorks\Tableau\Auth\TableauAuth;
 use InterWorks\Tableau\Enums\AuthType;
 

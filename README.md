@@ -56,9 +56,9 @@ enter it into your published config file.
 Initialize the API
 
 ```php
-use InterWorks\Tableau\TableauApi;
+use InterWorks\Tableau\TableauAPI;
 
-$tableau = new TableauApi();
+$tableau = new TableauAPI();
 ```
 
 Alternatively, you can override configuration dynamically if needed:
@@ -68,12 +68,12 @@ Config::set('tableau.server_url', 'https://my-new-server-url.com');
 Config::set('tableau.credentials.pat_name', 'new_server_pat_name');
 Config::set('tableau.credentials.pat_secret', 'new_server_pat_secret');
 
-$tableau = new TableauApi();
+$tableau = new TableauAPI();
 ```
 
 ### Authentication
 
-You don't need to manually authenticate. The `TableauApi` class automatically manages authentication tokens and reuses
+You don't need to manually authenticate. The `TableauAPI` class automatically manages authentication tokens and reuses
 them as long as they remain valid.
 
 ## Testing

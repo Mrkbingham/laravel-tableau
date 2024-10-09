@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->client->setAuthToken('fake-token');
 });
 
-describe('APIException', function () {
+describe('ApiException', function () {
     it('throws an ApiException for 404 Not Found', function () {
         // Mock the API response for a 404 Not Found error
         Http::fake([
