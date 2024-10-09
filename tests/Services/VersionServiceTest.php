@@ -4,7 +4,8 @@ use InterWorks\Tableau\Services\VersionService;
 
 describe('VersionServiceTest', function() {
     it('returns the correct API version for a given Tableau version', function ($tableauVersion, $expectedApiVersion) {
-        $apiVersion = VersionService::getApiVersion($tableauVersion);
+        Config::set('tableau.product_version', $tableauVersion);
+        $apiVersion = VersionService::getApiVersion();
         expect($apiVersion)->toBe($expectedApiVersion);
     })->with([
         ['8.3', '2.0'],
@@ -46,6 +47,7 @@ describe('VersionServiceTest', function() {
     ]);
 
     it('throws an exception for an unknown Tableau version', function () {
-        VersionService::getApiVersion('unknown-version');
+        Config::set('tableau.product_version', 'unknown-version');
+        VersionService::getApiVersion();
     })->throws(Exception::class, 'Unknown Tableau version: unknown-version');
 });
