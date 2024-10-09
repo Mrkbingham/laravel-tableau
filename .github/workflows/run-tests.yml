@@ -9,7 +9,7 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
-    environment: iw-tableau-server # TODO: Create multiple environments for Tableau Cloud/Cloud Beta versions
+    environment: iw-tableau-server
     strategy:
       fail-fast: true
       matrix:
