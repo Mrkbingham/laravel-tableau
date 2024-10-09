@@ -9,7 +9,6 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
-    # TODO: Add environment to the matrix so we can test on cloud, and on beta-cloud
     environment: iw-tableau-server
     strategy:
       fail-fast: true
