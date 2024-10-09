@@ -9,13 +9,13 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
-    environment: iw-tableau-server
+    environment: iw-tableau-server # TODO: Create multiple environments for Tableau Cloud/Cloud Beta versions
     strategy:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
         php: [8.3, 8.2]
-        laravel: [11.*, 10.*, 9.*]
+        laravel: [9.*]
         stability: [prefer-stable]
         include:
           - laravel: 11.*
