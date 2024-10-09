@@ -1,51 +1,36 @@
-name: Pest Tests Template
-
-on:
-  workflow_call:
-    inputs:
-      environment:
-        required: true
-        type: string
-      TABLEAU_URL:
-        required: true
-        type: string
-        description: 'The Tableau Server URL'
-      TABLEAU_PRODUCT_VERSION:
-        required: true
-        type: string
-        description: 'The Tableau Product Version'
-      TABLEAU_USERNAME:
-        required: true
-        type: string
-        description: 'The Tableau Server Admin Username'
-      TABLEAU_PASSWORD:
-        required: true
-        type: string
-        description: 'The Tableau Server Admin Password'
-
-jobs:
-  run-tests:
-    name: Run Pest Tests
-    runs-on: self-hosted
-    environment: ${{ inputs.environment }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.0' # Adjust the PHP version as needed
-
-      - name: Install dependencies
-        run: composer install --no-progress --prefer-dist
-
-      - name: Tableau Server Tests | Server Admin / Username and Password Auth
-        run: vendor/bin/pest --ci
-        env:
-          TABLEAU_URL: ${{ inputs.TABLEAU_URL }}
-          TABLEAU_PRODUCT_VERSION: ${{ inputs.TABLEAU_PRODUCT_VERSION }}
-          TABLEAU_PAT_NAME: ${{ inputs.TABLEAU_PAT_NAME }}
-          TABLEAU_PAT_SECRET: ${{ inputs.TABLEAU_PAT_SECRET }}
-          TABLEAU_USERNAME: ${{ inputs.TABLEAU_USERNAME }}
-          TABLEAU_PASSWORD: ${{ inputs.TABLEAU_PASSWORD }}
+name: 'Run Pest Tests'
+description: 'Run Pest tests with specific environment variables'
+inputs:
+  ENVIRONMENT:
+    description: 'Environment name'
+    required: true
+  TABLEAU_URL:
+    description: 'Tableau URL'
+    required: true
+  TABLEAU_PRODUCT_VERSION:
+    description: 'Tableau Product Version'
+    required: true
+  TABLEAU_PAT_NAME:
+    description: 'Tableau PAT Name'
+    required: true
+  TABLEAU_PAT_SECRET:
+    description: 'Tableau PAT Secret'
+    required: true
+  TABLEAU_USERNAME:
+    description: 'Tableau Username'
+    required: true
+  TABLEAU_PASSWORD:
+    description: 'Tableau Password'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Pest Tests - ${{ inputs.ENVIRONMENT }}
+      run: vendor/bin/pest --ci
+      env:
+        TABLEAU_URL: ${{ inputs.TABLEAU_URL }}
+        TABLEAU_PRODUCT_VERSION: ${{ inputs.TABLEAU_PRODUCT_VERSION }}
+        TABLEAU_PAT_NAME: ${{ inputs.TABLEAU_PAT_NAME }}
+        TABLEAU_PAT_SECRET: ${{ inputs.TABLEAU_PAT_SECRET }}
+        TABLEAU_USERNAME: ${{ inputs.TABLEAU_USERNAME }}
+        TABLEAU_PASSWORD: ${{ inputs.TABLEAU_PASSWORD }}
