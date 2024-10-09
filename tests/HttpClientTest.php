@@ -6,6 +6,7 @@ use InterWorks\Tableau\Services\VersionService;
 
 beforeEach(function () {
     $this->tableauURL = Config::get('tableau.url');
+    dump('TEST Tableau URL: ' . $this->tableauURL);
 
     // Initialize the HttpClient (uses the config to set the base URL)
     $this->client = new HttpClient();
