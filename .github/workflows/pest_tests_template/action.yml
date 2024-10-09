@@ -4,7 +4,7 @@ inputs:
   environment:
     description: 'Environment name'
     required: true
-  tabelau_url:
+  tableau_url:
     description: 'Tableau URL'
     required: true
   tabelau_product_version:
@@ -29,7 +29,7 @@ runs:
       run: vendor/bin/pest --ci
       shell: bash
       env:
-        TABLEAU_URL: ${{ inputs.tabelau_url }}
+        TABLEAU_URL: ${{ inputs.tableau_url }}
         TABLEAU_PRODUCT_VERSION: ${{ inputs.tabelau_product_version }}
         # Auth with PAT
         TABLEAU_PAT_NAME: ${{ inputs.tabelau_pat_name }}
