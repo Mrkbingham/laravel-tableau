@@ -57,7 +57,7 @@ jobs:
 
       - name: Output the environment variables
         env:
-          TABLEAU_URL: ${{ vars.TABLEAU_URL }}
+          TABLEAU_URL: "Hardcoded Tableau URL"
         run: |
           echo "Environment Variables: ${{ toJson(vars) }}"
 
