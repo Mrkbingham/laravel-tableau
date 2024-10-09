@@ -29,11 +29,11 @@ runs:
       run: vendor/bin/pest --ci
       shell: bash
       env:
-        TABLEAU_URL: ${{ secrets.tabelau_url }}
-        TABLEAU_PRODUCT_VERSION: ${{ secrets.tabelau_product_version }}
+        TABLEAU_URL: ${{ inputs.tabelau_url }}
+        TABLEAU_PRODUCT_VERSION: ${{ inputs.tabelau_product_version }}
         # Auth with PAT
-        TABLEAU_PAT_NAME: ${{ secrets.tabelau_pat_name }}
-        TABLEAU_PAT_SECRET: ${{ secrets.tabelau_pat_secret }}
+        TABLEAU_PAT_NAME: ${{ inputs.tabelau_pat_name }}
+        TABLEAU_PAT_SECRET: ${{ inputs.tabelau_pat_secret }}
         # Auth with Username
-        TABLEAU_USERNAME: ${{ secrets.tabelau_username }}
-        TABLEAU_PASSWORD: ${{ secrets.tabelau_password }}
+        TABLEAU_USERNAME: ${{ inputs.tabelau_username }}
+        TABLEAU_PASSWORD: ${{ inputs.tabelau_password }}
