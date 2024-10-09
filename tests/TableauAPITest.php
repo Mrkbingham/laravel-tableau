@@ -22,6 +22,13 @@ describe('TableauAPITest', function() {
     it('can sign out', function () {
         $tableau = new TableauAPI();
 
+        // Mock the sign out so we don't invalidate the existing token for other sessions
+        Http::fake([
+            Config::get('tableau.url') . '/api/*' => Http::response([
+                'success' => true
+            ], 204)
+        ]);
+
         // Sign out
         $tableau->auth()->signOut();
 
