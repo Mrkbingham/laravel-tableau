@@ -52,13 +52,13 @@ jobs:
         run: composer show -D
 
       - name: Tableau Server Tests | Server Admin / PAT Auth
-        uses: ./.github/workflows/pest_tests_template
-        with:
-          tableau_url: ${{ secrets.TABLEAU_URL }}
-          tabelau_product_version: ${{ secrets.TABLEAU_PRODUCT_VERSION }}
-          # Auth with PAT
-          tabelau_pat_name: ${{ secrets.TABLEAU_PAT_NAME }}
-          tabelau_pat_secret: ${{ secrets.TABLEAU_PAT_SECRET }}
-          # Auth with Username
-          tabelau_username: ${{ secrets.TABLEAU_USERNAME }}
-          tabelau_password: ${{ secrets.TABLEAU_PASSWORD }}
+        run: vendor/bin/pest --ci
+        env:
+          TABLEAU_URL: ${{ secrets.TABLEAU_URL }}
+          # TABLEAU_PRODUCT_VERSION: ${{ inputs.tabelau_product_version }}
+          # # Auth with PAT
+          # TABLEAU_PAT_NAME: ${{ inputs.tabelau_pat_name }}
+          # TABLEAU_PAT_SECRET: ${{ inputs.tabelau_pat_secret }}
+          # # Auth with Username
+          # TABLEAU_USERNAME: ${{ inputs.tabelau_username }}
+          # TABLEAU_PASSWORD: ${{ inputs.tabelau_password }}
