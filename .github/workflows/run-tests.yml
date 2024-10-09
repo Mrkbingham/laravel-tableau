@@ -53,7 +53,7 @@ jobs:
 
       - name: Tableau Server Tests | Server Admin / PAT Auth
         run: vendor/bin/pest --ci
-        env:
+        # env:
           # TABLEAU_URL: ${{ secrets.TABLEAU_URL }}
           # TABLEAU_PRODUCT_VERSION: ${{ inputs.tabelau_product_version }}
           # # Auth with PAT
