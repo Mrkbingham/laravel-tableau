@@ -59,7 +59,7 @@ jobs:
         env:
           TABLEAU_URL: "Hardcoded Tableau URL"
         run: |
-          echo "Environment Variables: ${{ toJson(vars) }}"
+          echo "Environment Variables: ${{ toJson(env) }}"
 
       - name: Tableau Server Tests | Server Admin / PAT Auth
         run: vendor/bin/pest --ci
