@@ -6,9 +6,46 @@ on:
       environment:
         required: true
         type: string
+      tableau_url:
+        required: true
+        type: string
+        description: 'The Tableau Server URL'
+      tableau_product_version:
+        required: true
+        type: string
+        description: 'The Tableau Product Version'
+      tableau_username:
+        required: true
+        type: string
+        description: 'The Tableau Server Admin Username'
+      tableau_password:
+        required: true
+        type: string
+        description: 'The Tableau Server Admin Password'
 
-  job-name:
-    name: Some job
-    environment: ${{ inputs.environment}}
+jobs:
+  run-tests:
+    name: Run Pest Tests
     runs-on: self-hosted
-    needs: something-else
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0' # Adjust the PHP version as needed
+
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Tableau Server Tests | Server Admin / Username and Password Auth
+        run: vendor/bin/pest --ci
+        env:
+          TABLEAU_URL: ${{ inputs.TABLEAU_URL }}
+          TABLEAU_PRODUCT_VERSION: ${{ inputs.TABLEAU_PRODUCT_VERSION }}
+          TABLEAU_PAT_NAME: ${{ inputs.TABLEAU_PAT_NAME }}
+          TABLEAU_PAT_SECRET: ${{ inputs.TABLEAU_PAT_SECRET }}
+          TABLEAU_USERNAME: ${{ inputs.TABLEAU_USERNAME }}
+          TABLEAU_PASSWORD: ${{ inputs.TABLEAU_PASSWORD }}
