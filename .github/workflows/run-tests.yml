@@ -56,10 +56,8 @@ jobs:
           echo "Environment: ${{ matrix.environment }}"
 
       - name: Output the environment variables
-        env:
-          TABLEAU_URL: "Hardcoded Tableau URL"
         run: |
-          echo "Environment Variables: ${{ toJson(env) }}"
+          echo "Environment Variables: ${{ vars.TABLEAU_URL }}"
 
       - name: Tableau Server Tests | Server Admin / PAT Auth
         run: vendor/bin/pest --ci
