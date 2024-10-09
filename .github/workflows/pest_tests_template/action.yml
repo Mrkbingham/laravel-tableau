@@ -4,24 +4,6 @@ inputs:
   ENVIRONMENT:
     description: 'Environment name'
     required: true
-  TABLEAU_URL:
-    description: 'Tableau URL'
-    required: true
-  TABLEAU_PRODUCT_VERSION:
-    description: 'Tableau Product Version'
-    required: true
-  TABLEAU_PAT_NAME:
-    description: 'Tableau PAT Name'
-    required: true
-  TABLEAU_PAT_SECRET:
-    description: 'Tableau PAT Secret'
-    required: true
-  TABLEAU_USERNAME:
-    description: 'Tableau Username'
-    required: true
-  TABLEAU_PASSWORD:
-    description: 'Tableau Password'
-    required: true
 runs:
   using: 'composite'
   steps:
@@ -29,9 +11,11 @@ runs:
       run: vendor/bin/pest --ci
       shell: bash
       env:
-        TABLEAU_URL: ${{ inputs.TABLEAU_URL }}
-        TABLEAU_PRODUCT_VERSION: ${{ inputs.TABLEAU_PRODUCT_VERSION }}
-        TABLEAU_PAT_NAME: ${{ inputs.TABLEAU_PAT_NAME }}
-        TABLEAU_PAT_SECRET: ${{ inputs.TABLEAU_PAT_SECRET }}
-        TABLEAU_USERNAME: ${{ inputs.TABLEAU_USERNAME }}
-        TABLEAU_PASSWORD: ${{ inputs.TABLEAU_PASSWORD }}
+        TABLEAU_URL: ${{ secrets.TABLEAU_URL }}
+        TABLEAU_PRODUCT_VERSION: ${{ secrets.TABLEAU_PRODUCT_VERSION }}
+        # Auth with PAT
+        TABLEAU_PAT_NAME: ${{ secrets.TABLEAU_PAT_NAME }}
+        TABLEAU_PAT_SECRET: ${{ secrets.TABLEAU_PAT_SECRET }}
+        # Auth with Username
+        TABLEAU_USERNAME: ${{ secrets.TABLEAU_USERNAME }}
+        TABLEAU_PASSWORD: ${{ secrets.TABLEAU_PASSWORD }}
