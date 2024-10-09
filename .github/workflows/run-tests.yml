@@ -13,6 +13,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
+        environment: ["InterWorks Tableau Server"]
         php: [8.3, 8.2]
         laravel: [11.*, 10.*]
         stability: [prefer-stable]
@@ -53,4 +54,11 @@ jobs:
       - name: Tableau Server Tests | Server Admin / PAT Auth
         uses: ./.github/workflows/pest_tests_template
         with:
-          ENVIRONMENT: "InterWorks Tableau Server"
+          tableau_url: ${{ secrets.TABLEAU_URL }}
+          TABLEAU_PRODUCT_VERSION: ${{ secrets.TABLEAU_PRODUCT_VERSION }}
+          # Auth with PAT
+          TABLEAU_PAT_NAME: ${{ secrets.TABLEAU_PAT_NAME }}
+          TABLEAU_PAT_SECRET: ${{ secrets.TABLEAU_PAT_SECRET }}
+          # Auth with Username
+          TABLEAU_USERNAME: ${{ secrets.TABLEAU_USERNAME }}
+          TABLEAU_PASSWORD: ${{ secrets.TABLEAU_PASSWORD }}
