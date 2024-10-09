@@ -4,7 +4,7 @@
 return [
     'url'             => env('TABLEAU_URL', 'https://your-tableau-server.com'),
     'site_name'       => env('TABLEAU_SITE_NAME', ''),
-    'product_version' => env('TABLEAU_PRODUCT_VERSION', '2021.1'),
+    'product_version' => env('TABLEAU_PRODUCT_VERSION'), // Leave blank to fetch from server
 
     /*
     |--------------------------------------------------------------------------

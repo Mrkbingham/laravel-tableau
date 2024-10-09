@@ -35,8 +35,9 @@ This is the contents of the published config file:
 
 ```php
 return [
-    'server_url' => env('TABLEAU_SERVER_URL', 'https://your-tableau-server.com'),
-    'api_version' => env('TABLEAU_API_VERSION', '3.11'),
+    'url'             => env('TABLEAU_URL', 'https://your-tableau-server.com'),
+    'site_name'       => env('TABLEAU_SITE_NAME', ''),
+    'product_version' => env('TABLEAU_PRODUCT_VERSION'),
     'credentials' => [
         'username' => env('TABLEAU_USERNAME', ''),
         'password' => env('TABLEAU_PASSWORD', ''),
@@ -45,6 +46,10 @@ return [
     'token_name' => env('TABLEAU_TOKEN_NAME', ''),
 ];
 ```
+
+NOTE: The `product_version` is not required, but will make an additional `GET` request prior to authorization.  For
+performance considerations, either configure your product_version prior to initializing a new TableauAPI() class, or
+enter it into your published config file.
 
 ## Usage
 
@@ -60,7 +65,9 @@ Alternatively, you can override configuration dynamically if needed:
 
 ```php
 Config::set('tableau.server_url', 'https://my-new-server-url.com');
-Config::set('tableau.product_version', '3.10');
+Config::set('tableau.credentials.pat_name', 'new_server_pat_name');
+Config::set('tableau.credentials.pat_secret', 'new_server_pat_secret');
+
 $tableau = new TableauApi();
 ```
 

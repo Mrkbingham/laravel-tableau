@@ -3,6 +3,10 @@
 namespace InterWorks\Tableau\Services;
 
 use Exception;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
+use InterWorks\Tableau\Http\ErrorHandler;
+use InterWorks\Tableau\Http\ResponseParser;
 
 class VersionService
 {
@@ -46,15 +50,43 @@ class VersionService
     ];
 
     /**
+     * Returns the Product version from Tableau's open API.
+     *
+     * Since this call happens prior to authentication, use the HTTP facade, and not the HttpClient.
+     *
+     * @return string
+     */
+    public static function fetchAPIVersionFromTableau(): string
+    {
+        $tableauURL = Config::get('tableau.url');
+        // 2.4 is the earliest version that supports the serverinfo endpoint
+        $response = Http::get($tableauURL . '/api/2.4/serverinfo');
+
+        if (!$response->successful()) {
+            return ErrorHandler::handle($response);
+        } else {
+            $responseData = ResponseParser::parse($response);
+            return $responseData['serverInfo']['restApiVersion'];
+        }
+    }
+
+    /**
      * Returns the REST API version.
      *
      * @return string
      */
-    public static function getApiVersion(string $tableauVersion): string
+    public static function getApiVersion(): string
     {
-        if (!isset(self::$apiVersionMap[$tableauVersion])) {
-            throw new Exception('Unknown Tableau version: ' . $tableauVersion);
+        $productVersion = Config::get('tableau.product_version');
+
+        // If there is no product version set, retrieve it from the server
+        if (!$productVersion) {
+            return self::fetchAPIVersionFromTableau();
         }
-        return self::$apiVersionMap[$tableauVersion];
+
+        if (!isset(self::$apiVersionMap[$productVersion])) {
+            throw new Exception('Unknown Tableau version: ' . $productVersion);
+        }
+        return self::$apiVersionMap[$productVersion];
     }
 }
