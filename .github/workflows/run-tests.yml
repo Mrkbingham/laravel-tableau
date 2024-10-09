@@ -22,12 +22,16 @@ jobs:
           - laravel: 11.*
             testbench: 9.*
             carbon: ^2.63
+            pest: ^2.34
           - laravel: 10.*
             testbench: 8.*
             carbon: ^2.63
+            pest: ^2.34
           - laravel: 9.*
             testbench: 7.*
             carbon: ^2.63
+            pest: ^1.22
+            "pestphp/pest-plugin-laravel": ^1.4
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
 
@@ -49,7 +53,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "nesbot/carbon:${{ matrix.os == 'windows-latest' && '^^^' || '' }}${{ matrix.carbon }}" --no-interaction --no-update
+          composer require \
+            "laravel/framework:${{ matrix.laravel }}" \
+            "orchestra/testbench:${{ matrix.testbench }}" \
+            "nesbot/carbon:${{ matrix.os == 'windows-latest' && '^^^' || '' }}${{ matrix.carbon }}" \
+            "pestphp/pest:${{ matrix.pest }}" \
+            --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Tableau Server Tests | Server Admin / PAT Auth
