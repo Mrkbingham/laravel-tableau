@@ -73,6 +73,8 @@ class VersionService
     /**
      * Returns the REST API version.
      *
+     * @throws Exception If the Tableau version is unknown.
+     *
      * @return string
      */
     public static function getAPIVersion(): string

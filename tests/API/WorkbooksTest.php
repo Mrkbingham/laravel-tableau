@@ -50,9 +50,9 @@ describe('WorkbooksTest', function () {
     })->skip('not yet implemented');
     it('can getWorkbookById', function () {
         // Call the method to get a workbook by ID
-        $workbookContentURL = env('TABLEAU_SERVER_WORKBOOK_CONTENT_URL');
-        $workbookID = env('TABLEAU_SERVER_WORKBOOK_ID');
-        $workbookName = env('TABLEAU_SERVER_WORKBOOK_NAME');
+        $workbookContentURL = env('TABLEAU_WORKBOOK_CONTENT_URL');
+        $workbookID = env('TABLEAU_WORKBOOK_ID');
+        $workbookName = env('TABLEAU_WORKBOOK_NAME');
         $response = $this->tableau->workbooks()->getWorkbookById($workbookID);
 
         // Assert the response contains the correct workbook data
@@ -63,9 +63,9 @@ describe('WorkbooksTest', function () {
     });
     it('can getWorkbookByContentURL', function () {
         // Call the method to get a workbook by ID
-        $workbookContentURL = env('TABLEAU_SERVER_WORKBOOK_CONTENT_URL');
-        $workbookID = env('TABLEAU_SERVER_WORKBOOK_ID');
-        $workbookName = env('TABLEAU_SERVER_WORKBOOK_NAME');
+        $workbookContentURL = env('TABLEAU_WORKBOOK_CONTENT_URL');
+        $workbookID = env('TABLEAU_WORKBOOK_ID');
+        $workbookName = env('TABLEAU_WORKBOOK_NAME');
         $response = $this->tableau->workbooks()->getWorkbookByContentURL($workbookContentURL);
 
         // Assert the response contains the correct workbook data

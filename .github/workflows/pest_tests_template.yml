@@ -1,0 +1,14 @@
+name: Pest Tests Template
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+  job-name:
+    name: Some job
+    environment: ${{ inputs.environment}}
+    runs-on: self-hosted
+    needs: something-else
