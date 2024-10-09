@@ -57,7 +57,7 @@ jobs:
 
       - name: Output the environment variables
         run: |
-          echo "Environment Variables: ${{ toJson(env) }}"
+          echo "Environment Variables: ${{ toJson(vars) }}"
 
       - name: Tableau Server Tests | Server Admin / PAT Auth
         run: vendor/bin/pest --ci
