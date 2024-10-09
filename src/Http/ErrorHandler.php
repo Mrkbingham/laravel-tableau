@@ -3,7 +3,7 @@
 namespace InterWorks\Tableau\Http;
 
 use Illuminate\Http\Client\Response;
-use InterWorks\Tableau\Exceptions\ApiException;
+use InterWorks\Tableau\Exceptions\APIException;
 
 class ErrorHandler
 {
@@ -12,7 +12,7 @@ class ErrorHandler
      *
      * @param Response $response The response object.
      *
-     * @throws ApiException If an error occurs.
+     * @throws APIException If an error occurs.
      *
      * @return void
      */
@@ -25,24 +25,24 @@ class ErrorHandler
         switch ($statusCode) {
             case 400:
                 $errorMessage = self::parseTableauError($response);
-                throw new ApiException("Bad Request: $errorMessage", 400);
+                throw new APIException("Bad Request: $errorMessage", 400);
             case 401:
                 $errorMessage = self::parseTableauError($response);
-                throw new ApiException("Unauthorized: $errorMessage", 401);
+                throw new APIException("Unauthorized: $errorMessage", 401);
             case 403:
                 $errorMessage = self::parseTableauError($response);
-                throw new ApiException("Forbidden: $errorMessage", 403);
+                throw new APIException("Forbidden: $errorMessage", 403);
             case 404:
                 $path = $response->effectiveUri()->getPath();
                 $errorMessage = "Resource Not Found: $path. Response: " . $response->body();
-                throw new ApiException($errorMessage, 404);
+                throw new APIException($errorMessage, 404);
             case 500:
                 $path = $response->effectiveUri()->getPath();
                 $errorMessage = "Internal Server Error: $path. Response: " . $response->body();
-                throw new ApiException($errorMessage, 500);
+                throw new APIException($errorMessage, 500);
             default:
                 $errorMessage = "API Error: " . $response->body();
-                throw new ApiException($errorMessage, $statusCode);
+                throw new APIException($errorMessage, $statusCode);
         }
     }
 

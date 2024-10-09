@@ -60,7 +60,7 @@ class HttpClient
         $this->tableauUrl = Config::get('tableau.url');
 
         // Get the product version and set the API version
-        $this->apiVersion = VersionService::getApiVersion();
+        $this->apiVersion = VersionService::getAPIVersion();
 
         // Set the auth token if provided
         if ($authToken) {

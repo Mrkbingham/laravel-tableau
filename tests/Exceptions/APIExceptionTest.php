@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
-use InterWorks\Tableau\Exceptions\ApiException;
+use InterWorks\Tableau\Exceptions\APIException;
 use InterWorks\Tableau\Http\HttpClient;
 
 beforeEach(function () {
@@ -14,15 +14,15 @@ beforeEach(function () {
     $this->client->setAuthToken('fake-token');
 });
 
-describe('ApiException', function () {
-    it('throws an ApiException for 404 Not Found', function () {
+describe('APIException', function () {
+    it('throws an APIException for 404 Not Found', function () {
         // Mock the API response for a 404 Not Found error
         Http::fake([
             $this->baseUrl . '/*' => Http::response('Resource not found', 404)
         ]);
 
-        // Expect the ApiException to be thrown
-        $this->expectException(ApiException::class);
+        // Expect the APIException to be thrown
+        $this->expectException(APIException::class);
         $this->expectExceptionMessage('Resource not found');
         $this->expectExceptionCode(404);
 
@@ -30,14 +30,14 @@ describe('ApiException', function () {
         $this->client->get($this->baseUrl . '/non-existent-resource');
     });
 
-    it('throws an ApiException for 401 Unauthorized', function () {
+    it('throws an APIException for 401 Unauthorized', function () {
         // Mock the API response for a 401 Unauthorized error
         Http::fake([
             $this->baseUrl . '/*' => Http::response('Unauthorized access', 401)
         ]);
 
-        // Expect the ApiException to be thrown
-        $this->expectException(ApiException::class);
+        // Expect the APIException to be thrown
+        $this->expectException(APIException::class);
         $this->expectExceptionMessage('Unauthorized: Unknown Tableau Error');
         $this->expectExceptionCode(401);
 
@@ -45,14 +45,14 @@ describe('ApiException', function () {
         $this->client->get($this->baseUrl . '/protected-resource');
     });
 
-    it('throws an ApiException for 500 Internal Server Error', function () {
+    it('throws an APIException for 500 Internal Server Error', function () {
         // Mock the API response for a 500 Internal Server Error
         Http::fake([
             $this->baseUrl . '/*' => Http::response('Internal server error', 500)
         ]);
 
-        // Expect the ApiException to be thrown
-        $this->expectException(ApiException::class);
+        // Expect the APIException to be thrown
+        $this->expectException(APIException::class);
         $this->expectExceptionMessage('Internal server error');
         $this->expectExceptionCode(500);
 
@@ -66,10 +66,10 @@ describe('ApiException', function () {
             $this->baseUrl . '/*' => Http::response('Access forbidden', 403)
         ]);
 
-        // Capture the thrown ApiException
+        // Capture the thrown APIException
         try {
             $this->client->get($this->baseUrl . '/forbidden-resource');
-        } catch (ApiException $e) {
+        } catch (APIException $e) {
             // Assert the error message and code
             expect($e->getErrorMessage())->toBe('Forbidden: Unknown Tableau Error');
             expect($e->getStatusCode())->toBe(403);
@@ -84,8 +84,8 @@ describe('ApiException', function () {
             }
         ]);
 
-        // Expect the ApiException to be thrown
-        $this->expectException(ApiException::class);
+        // Expect the APIException to be thrown
+        $this->expectException(APIException::class);
         $this->expectExceptionMessage('Request failed');
 
         // Make a request that will fail

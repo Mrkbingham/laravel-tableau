@@ -14,7 +14,7 @@ beforeEach(function () {
 
 describe('HttpClientTest', function () {
     it('can get the base URL', function () {
-        $expectedURL = $this->tableauURL . '/api/' . VersionService::getApiVersion(env('TABLEAU_PRODUCT_VERSION'));
+        $expectedURL = $this->tableauURL . '/api/' . VersionService::getAPIVersion(env('TABLEAU_PRODUCT_VERSION'));
 
 
         // Assert the base URL is set correctly

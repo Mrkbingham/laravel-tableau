@@ -4,7 +4,7 @@ namespace InterWorks\Tableau\Exceptions;
 
 use Exception;
 
-class ApiException extends Exception
+class APIException extends Exception
 {
     /** @var integer */
     protected $statusCode;
@@ -12,7 +12,7 @@ class ApiException extends Exception
     protected $errorMessage;
 
     /**
-     * ApiException constructor.
+     * APIException constructor.
      *
      * @param string|null $message    The error message for the API exception.
      * @param integer     $statusCode The status code for the API exception.

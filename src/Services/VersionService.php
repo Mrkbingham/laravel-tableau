@@ -75,7 +75,7 @@ class VersionService
      *
      * @return string
      */
-    public static function getApiVersion(): string
+    public static function getAPIVersion(): string
     {
         $productVersion = Config::get('tableau.product_version');
 

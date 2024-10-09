@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use InterWorks\Tableau\Enums\AuthType;
-use InterWorks\Tableau\Exceptions\ApiException;
+use InterWorks\Tableau\Exceptions\APIException;
 use InterWorks\Tableau\TableauAPI;
 
 beforeEach(function () {
@@ -31,8 +31,8 @@ describe('TableauAuthTest', function() {
         Config::set('tableau.credentials.username', 'wrong-username');
         Config::set('tableau.credentials.password', 'wrong-password');
 
-        // Expect the ApiException to be thrown
-        $this->expectException(ApiException::class);
+        // Expect the APIException to be thrown
+        $this->expectException(APIException::class);
         $this->expectExceptionMessage('Unauthorized: (401001)');
         $this->expectExceptionCode(401);
 
@@ -45,8 +45,8 @@ describe('TableauAuthTest', function() {
             $this->tableauURL . '/api/*' => Http::response('Network error', 500)
         ]);
 
-        // Expect the ApiException to be thrown
-        $this->expectException(ApiException::class);
+        // Expect the APIException to be thrown
+        $this->expectException(APIException::class);
         $this->expectExceptionMessage('Network error');
         $this->expectExceptionCode(500);
 
