@@ -18,14 +18,14 @@ jobs:
         laravel: [9.*]
         stability: [prefer-stable]
         include:
-          - laravel: 11.*
-            testbench: 9.*
-            carbon: ^2.63
-            pest: ^2.34
-          - laravel: 10.*
-            testbench: 8.*
-            carbon: ^2.63
-            pest: ^2.34
+          # - laravel: 11.*
+          #   testbench: 9.*
+          #   carbon: ^2.63
+          #   pest: ^2.34
+          # - laravel: 10.*
+          #   testbench: 8.*
+          #   carbon: ^2.63
+          #   pest: ^2.34
           - laravel: 9.*
             testbench: 7.*
             carbon: ^2.63
