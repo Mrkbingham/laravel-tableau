@@ -42,8 +42,9 @@ class ErrorHandler
         // Parse the error message based on the status code
         switch ($statusCode) {
             case 400:
+                $path = $this->response->effectiveUri()->getPath();
                 $errorMessage = $this->getDetailMessage();
-                throw new APIException("Bad Request: $errorMessage", 400);
+                throw new APIException("Bad Request: $path. $errorMessage", 400);
             case 401:
                 $errorMessage = $this->getDetailMessage();
                 throw new APIException("Unauthorized: $errorMessage", 401);
@@ -113,9 +114,9 @@ class ErrorHandler
      *
      * @return string
      */
-    public function errorDetails(): string
+    public function errorDetail(): string
     {
-        return $this->errorData['details'];
+        return $this->errorData['detail'];
     }
 
     /**
@@ -127,8 +128,8 @@ class ErrorHandler
     {
         $errorSummary = $this->errorSummary();
         $errorCode = $this->errorCode();
-        $errorDetails = $this->errorDetails();
+        $errorDetail = $this->errorDetail();
 
-        return "($errorCode) $errorSummary. $errorDetails.";
+        return "($errorCode) $errorSummary. $errorDetail.";
     }
 }

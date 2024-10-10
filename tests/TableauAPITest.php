@@ -19,6 +19,26 @@ describe('TableauAPITest', function() {
         expect($tableau->auth()->getToken())->not->toBeEmpty();
     });
 
+    it('can re-authenticate when using invalid token', function () {
+        // Authenticate and retrieve the token
+        $tableau = new TableauAPI();
+        $originalToken = $tableau->auth()->getToken();
+        // Logout
+        $tableau->auth()->signOut();
+
+        // Manually re-set the token to use the original token
+        $tableau->auth()->setToken($originalToken);
+
+        // Try to make a request with the old token
+        $workbookData = $tableau->workbooks()->getWorkbookById(env('TABLEAU_WORKBOOK_ID'));
+
+        // Make sure there is a new token
+        expect($tableau->auth()->getToken())->not->toBe($originalToken);
+
+        // Make sure the request was successful
+        expect($workbookData)->toHaveKey('workbook');
+    });
+
     it('can sign out', function () {
         $tableau = new TableauAPI();
 

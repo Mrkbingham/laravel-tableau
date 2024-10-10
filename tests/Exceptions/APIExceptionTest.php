@@ -11,7 +11,7 @@ beforeEach(function () {
 
     // Initialize the HttpClient (uses the config to set the base URL)
     $this->client = new HttpClient();
-    $this->client->setAuthToken('fake-token');
+    $this->client->setToken('fake-token');
 });
 
 describe('APIException', function () {

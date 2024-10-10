@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use InterWorks\Tableau\Auth\TableauAuth;
 use InterWorks\Tableau\Http\ErrorHandler;
 use InterWorks\Tableau\Services\VersionService;
 
@@ -20,10 +21,8 @@ class HttpClient
      */
     protected $apiVersion;
 
-    /**
-     * @var string|null $authToken
-     */
-    protected $authToken;
+    /** @var TableauAuth */
+    protected $auth;
 
     /**
      * @var array $openEndpoints Endpoints that do not require a token
@@ -50,11 +49,11 @@ class HttpClient
     /**
      * HttpClient constructor.
      *
-     * @param string|null $authToken The auth token to use for requests.
+     * @param TableauAuth|null $tableauAuth The auth instance to use for requests
      *
      * @return void
      */
-    public function __construct(?string $authToken = null)
+    public function __construct(?TableauAuth $tableauAuth = null)
     {
         // Set the base URL and auth token
         $this->tableauUrl = Config::get('tableau.url');
@@ -62,9 +61,9 @@ class HttpClient
         // Get the product version and set the API version
         $this->apiVersion = VersionService::getAPIVersion();
 
-        // Set the auth token if provided
-        if ($authToken) {
-            $this->setAuthToken($authToken);
+        // Set the auth if provided
+        if ($tableauAuth) {
+            $this->auth = $tableauAuth;
         }
     }
 
@@ -80,11 +79,16 @@ class HttpClient
     {
         $response = $callback();
 
-        // If the response is a 401002 error, re-authenticate and try again
-        dd($response);
-        if ($response['error']['code'] === '401002') {
-            $this->authenticate();
-            $response = $callback();
+        // If the response is not successful, check to see if it's a 401002 error
+        if (!$response->successful()) {
+            $errorHandler = new ErrorHandler($response);
+            $errorCode = $errorHandler->errorCode();
+            if ($errorCode === 401002) {
+                // Retry the request
+                $this->auth->setToken(null);
+                $this->auth->authenticate();
+                $response = $callback();
+            }
         }
 
         return $response;
@@ -102,8 +106,12 @@ class HttpClient
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
 
-        $response = Http::withHeaders($this->getHeaders())
-            ->delete($this->getBaseURL() . $endpoint);
+        // Make the call, and retry if necessary (401002 error)
+        $response = $this->callWithRetry(function () use ($endpoint) {
+            return Http::withHeaders($this->getHeaders())
+                ->delete($this->getBaseURL() . $endpoint);
+        });
+
 
         return $this->handleResponse($response);
     }
@@ -121,11 +129,10 @@ class HttpClient
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
 
-
         // Make the call, and retry if necessary (401002 error)
         $response = $this->callWithRetry(function () use ($endpoint, $queryParams) {
             return Http::withHeaders($this->getHeaders())
-                ->put($this->getBaseURL() . $endpoint, $queryParams);
+                ->get($this->getBaseURL() . $endpoint, $queryParams);
         });
 
         return $this->handleResponse($response);
@@ -161,8 +168,11 @@ class HttpClient
             throw new Exception('The first key in the body array cannot be "tsRequest"');
         }
 
-        $response = Http::withHeaders($this->getHeaders())
+        // Make the call, and retry if necessary (401002 error)
+        $response = $this->callWithRetry(function () use ($endpoint, $body) {
+            return Http::withHeaders($this->getHeaders())
             ->post($this->getBaseURL() . $endpoint, $body);
+        });
 
         return $this->handleResponse($response);
     }
@@ -182,22 +192,13 @@ class HttpClient
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
 
-        $response = Http::withHeaders($this->getHeaders())
-            ->put($this->getBaseURL() . $endpoint, $body);
+        // Make the call, and retry if necessary (401002 error)
+        $response = $this->callWithRetry(function () use ($endpoint, $body) {
+            return Http::withHeaders($this->getHeaders())
+                ->put($this->getBaseURL() . $endpoint, $body);
+        });
 
         return $this->handleResponse($response);
-    }
-
-    /**
-     * Sets the auth token
-     *
-     * @param string $token The auth token to set.
-     *
-     * @return void
-     */
-    public function setAuthToken(string $token): void
-    {
-        $this->authToken = $token;
     }
 
     /**
@@ -256,8 +257,8 @@ class HttpClient
             'Content-Type' => 'application/json',
         ];
 
-        if ($this->authToken) {
-            $headers['X-Tableau-Auth'] = $this->authToken;
+        if ($this->auth->getToken()) {
+            $headers['X-Tableau-Auth'] = $this->auth->getToken();
         }
 
         return $headers;
@@ -303,7 +304,7 @@ class HttpClient
     {
         if (
             !in_array($endpoint, $this->openEndpoints)
-            && !$this->authToken
+            && ($this->auth && !$this->auth->getToken())
         ) {
             throw new Exception(
                 'An auth token is required for the endpoint' . $endpoint . ', use the authenticate() method'

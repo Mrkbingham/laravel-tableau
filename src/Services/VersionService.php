@@ -63,7 +63,8 @@ class VersionService
         $response = Http::get($tableauURL . '/api/2.4/serverinfo');
 
         if (!$response->successful()) {
-            return ErrorHandler::handle($response);
+            $errorHandler = new ErrorHandler($response);
+            return $errorHandler->outputMessage();
         } else {
             $responseData = ResponseParser::parse($response);
             return $responseData['serverInfo']['restApiVersion'];

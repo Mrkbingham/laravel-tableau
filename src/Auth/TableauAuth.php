@@ -21,7 +21,7 @@ class TableauAuth
     /** @var string */
     protected $siteContentURL;
     /** @var string */
-    protected $token;
+    protected $authToken;
     /** @var integer */
     protected $tokenExpiration;
     /** @var string */
@@ -52,7 +52,7 @@ class TableauAuth
         $this->siteContentURL = $siteContentURL ?? Config::get('tableau.site_name');
 
         // Initialize the HTTP client
-        $this->client = new HttpClient();
+        $this->client = new HttpClient($this);
 
         // Immediately authenticate
         $this->authenticate();
@@ -66,18 +66,18 @@ class TableauAuth
     public function authenticate(): void
     {
         // If token is valid, reuse it
-        if ($this->token && !$this->isTokenExpired()) {
+        if ($this->authToken && !$this->isTokenExpired()) {
             return;
         }
 
         $response = $this->client->post('/auth/signin', $this->getAuthPayload());
 
         // Extract the token and set the token expiration
-        $this->token = $response['credentials']['token'] ?? null;
+        $this->authToken = $response['credentials']['token'] ?? null;
         $this->setTokenExpiration();
 
         // Set the token on the client
-        $this->client->setAuthToken($this->token);
+        $this->setToken($this->authToken);
 
         // Set the site ID
         $this->siteID = $response['credentials']['site']['id'];
@@ -91,6 +91,83 @@ class TableauAuth
     public function client(): HttpClient
     {
         return $this->client;
+    }
+
+    /**
+     * Returns the current token
+     *
+     * @return string|null
+     */
+    public function getToken(): string|null
+    {
+        return $this->authToken;
+    }
+
+    /**
+     * Returns the current site (Tableau site name, NOT id)
+     *
+     * @return string
+     */
+    public function getSiteContentURL(): string
+    {
+        return $this->siteContentURL;
+    }
+
+    /**
+     * Returns the Site ID (the Tableau site ID, NOT the site name)
+     *
+     * @return string
+     */
+    public function getSiteID(): string
+    {
+        return $this->siteID;
+    }
+
+    /**
+     * Sign out from Tableau Server and invalidate the token
+     *
+     * @return void
+     */
+    public function signOut(): void
+    {
+        if ($this->authToken) {
+            $this->client->post('/auth/signout', []);
+            $this->authToken = null;  // Invalidate the token
+        }
+    }
+
+    /**
+     * Sets the auth token
+     *
+     * NOTE: Set the auth token to null in order to enable re-authentication.  Typically this is not needed, but for
+     * re-authenticating with a different user, or working around an expired/invalid token this is necessary.
+     *
+     * @param string|null $token The auth token to set.
+     *
+     * @return void
+     */
+    public function setToken(?string $token): void
+    {
+        $this->authToken = $token;
+    }
+
+    /**
+     * Sets the expiration time of the token
+     *
+     * @throws Exception If the token expiration time is not set in the configuration file.
+     *
+     * @return void
+     */
+    public function setTokenExpiration(): void
+    {
+        // Make sure the config is set
+        $expirationTimeInMinutes = Config::get('tableau.token_expiry');
+        if (empty($expirationTimeInMinutes)) {
+            throw new Exception('Token expiration time not set in the configuration file.');
+        }
+
+        // Set the expiration time
+        $this->authTokenExpiration = time() + ($expirationTimeInMinutes * 60);
     }
 
     /**
@@ -126,74 +203,12 @@ class TableauAuth
     }
 
     /**
-     * Returns the current token
-     *
-     * @return string|null
-     */
-    public function getToken(): string|null
-    {
-        return $this->token;
-    }
-
-    /**
-     * Returns the current site (Tableau site name, NOT id)
-     *
-     * @return string
-     */
-    public function getSiteContentURL(): string
-    {
-        return $this->siteContentURL;
-    }
-
-    /**
-     * Returns the Site ID (the Tableau site ID, NOT the site name)
-     *
-     * @return string
-     */
-    public function getSiteID(): string
-    {
-        return $this->siteID;
-    }
-
-    /**
-     * Sign out from Tableau Server and invalidate the token
-     *
-     * @return void
-     */
-    public function signOut(): void
-    {
-        if ($this->token) {
-            $this->client->post('/auth/signout', []);
-            $this->token = null;  // Invalidate the token
-        }
-    }
-
-    /**
-     * Sets the expiration time of the token
-     *
-     * @throws Exception If the token expiration time is not set in the configuration file.
-     *
-     * @return void
-     */
-    public function setTokenExpiration(): void
-    {
-        // Make sure the config is set
-        $expirationTimeInMinutes = Config::get('tableau.token_expiry');
-        if (empty($expirationTimeInMinutes)) {
-            throw new Exception('Token expiration time not set in the configuration file.');
-        }
-
-        // Set the expiration time
-        $this->tokenExpiration = time() + ($expirationTimeInMinutes * 60);
-    }
-
-    /**
      * Check if the current token has expired
      *
      * @return boolean
      */
     protected function isTokenExpired(): bool
     {
-        return time() >= $this->tokenExpiration;
+        return time() >= $this->authTokenExpiration;
     }
 }
