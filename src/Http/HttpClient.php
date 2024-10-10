@@ -68,9 +68,8 @@ class HttpClient
     }
 
     /**
-     * Makes a call to the Tableau API, intaking a callback so the endpoint can be re-tried on a 401002 error
+     * Makes a call to the Tableau API, taking in a callback so the endpoint can be re-tried on a 401002 error
      *
-     * @param string $endpoint The endpoint to send the request to.
      * @param callable $callback The callback to execute.
      *
      * @return Response
