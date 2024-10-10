@@ -154,11 +154,27 @@ class TableauAuth
     /**
      * Sets the expiration time of the token
      *
+     * @param integer|null $expiration The expiration time of the token.
+     *
+     * @return void
+     */
+    public function setTokenExpiration(?int $expiration = null): void
+    {
+        if (is_int($expiration)) {
+            $this->authTokenExpiration = $expiration;
+        } else {
+            $this->setTokenExpirationFromConfig();
+        }
+    }
+
+    /**
+     * Sets the expiration time of the token from the configuration file settings.
+     *
      * @throws Exception If the token expiration time is not set in the configuration file.
      *
      * @return void
      */
-    public function setTokenExpiration(): void
+    public function setTokenExpirationFromConfig(): void
     {
         // Make sure the config is set
         $expirationTimeInMinutes = Config::get('tableau.token_expiry');
