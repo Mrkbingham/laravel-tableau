@@ -1,0 +1,29 @@
+{
+  "name": "laravel-tableau",
+  "version": "1.0.0",
+  "description": "Laravel API For Tableau",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mrkbingham/laravel-tableau.git"
+  },
+  "keywords": [
+    "Tableau",
+    "Laravel"
+  ],
+  "author": "mrkbingham@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Mrkbingham/laravel-tableau/issues"
+  },
+  "homepage": "https://github.com/Mrkbingham/laravel-tableau#readme",
+  "dependencies": {
+    "cspell": "^8.14.4"
+  }
+}

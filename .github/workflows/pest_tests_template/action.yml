@@ -1,0 +1,39 @@
+name: 'Run Pest Tests'
+description: 'Run Pest tests with specific environment variables'
+inputs:
+  environment:
+    description: 'Environment name'
+    required: true
+  tableau_url:
+    description: 'Tableau URL'
+    required: true
+  tabelau_product_version:
+    description: 'Tableau Product Version'
+    required: true
+  tabelau_pat_name:
+    description: 'Tableau PAT Name'
+    required: true
+  tabelau_pat_secret:
+    description: 'Tableau PAT Secret'
+    required: true
+  tabelau_username:
+    description: 'Tableau Username'
+    required: true
+  tabelau_password:
+    description: 'Tableau Password'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Pest Tests - ${{ inputs.environment }}
+      run: vendor/bin/pest --ci
+      shell: bash
+      env:
+        TABLEAU_URL: ${{ inputs.tableau_url }}
+        TABLEAU_PRODUCT_VERSION: ${{ inputs.tabelau_product_version }}
+        # Auth with PAT
+        TABLEAU_PAT_NAME: ${{ inputs.tabelau_pat_name }}
+        TABLEAU_PAT_SECRET: ${{ inputs.tabelau_pat_secret }}
+        # Auth with Username
+        TABLEAU_USERNAME: ${{ inputs.tabelau_username }}
+        TABLEAU_PASSWORD: ${{ inputs.tabelau_password }}
