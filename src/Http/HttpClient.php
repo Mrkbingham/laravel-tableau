@@ -257,7 +257,7 @@ class HttpClient
             'Content-Type' => 'application/json',
         ];
 
-        if ($this->auth->getToken()) {
+        if ($this->auth && $this->auth->getToken()) {
             $headers['X-Tableau-Auth'] = $this->auth->getToken();
         }
 

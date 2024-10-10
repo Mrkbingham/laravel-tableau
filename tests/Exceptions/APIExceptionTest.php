@@ -11,7 +11,6 @@ beforeEach(function () {
 
     // Initialize the HttpClient (uses the config to set the base URL)
     $this->client = new HttpClient();
-    $this->client->setToken('fake-token');
 });
 
 describe('APIException', function () {
@@ -38,7 +37,7 @@ describe('APIException', function () {
 
         // Expect the APIException to be thrown
         $this->expectException(APIException::class);
-        $this->expectExceptionMessage('Unauthorized: Unknown Tableau Error');
+        $this->expectExceptionMessage('Unauthorized: (0) Unknown Tableau Error. No error details available.');
         $this->expectExceptionCode(401);
 
         // Make a request that should trigger a 401 error
@@ -71,7 +70,7 @@ describe('APIException', function () {
             $this->client->get($this->baseUrl . '/forbidden-resource');
         } catch (APIException $e) {
             // Assert the error message and code
-            expect($e->getErrorMessage())->toBe('Forbidden: Unknown Tableau Error');
+            expect($e->getErrorMessage())->toBe('Forbidden: (0) Unknown Tableau Error. No error details available.');
             expect($e->getStatusCode())->toBe(403);
         }
     });
