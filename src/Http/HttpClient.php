@@ -81,13 +81,16 @@ class HttpClient
         // If the response is not successful, check to see if it's a 401002 error
         if (!$response->successful()) {
             $errorHandler = new ErrorHandler($response);
-            $errorCode = $errorHandler->errorCode();
-            if ($errorCode === 401002) {
-                // Retry the request
-                $this->auth->setToken(null);
-                $this->auth->authenticate();
-                $response = $callback();
+            if ($errorHandler->errorCode() !== 401002) {
+                return $response;
             }
+
+            // Invalidate the token and re-authenticate
+            $this->auth->setTokenExpiration(0);
+            $this->auth->authenticate();
+
+            // Execute the callback again
+            $response = $callback();
         }
 
         return $response;
@@ -170,7 +173,7 @@ class HttpClient
         // Make the call, and retry if necessary (401002 error)
         $response = $this->callWithRetry(function () use ($endpoint, $body) {
             return Http::withHeaders($this->getHeaders())
-            ->post($this->getBaseURL() . $endpoint, $body);
+                ->post($this->getBaseURL() . $endpoint, $body);
         });
 
         return $this->handleResponse($response);
