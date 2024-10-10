@@ -69,6 +69,28 @@ class HttpClient
     }
 
     /**
+     * Makes a call to the Tableau API, intaking a callback so the endpoint can be re-tried on a 401002 error
+     *
+     * @param string $endpoint The endpoint to send the request to.
+     * @param callable $callback The callback to execute.
+     *
+     * @return Response
+     */
+    public function callWithRetry(callable $callback)
+    {
+        $response = $callback();
+
+        // If the response is a 401002 error, re-authenticate and try again
+        dd($response);
+        if ($response['error']['code'] === '401002') {
+            $this->authenticate();
+            $response = $callback();
+        }
+
+        return $response;
+    }
+
+    /**
      * Send a DELETE request
      *
      * @param string $endpoint The endpoint to send the request to.
@@ -99,8 +121,12 @@ class HttpClient
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
 
-        $response = Http::withHeaders($this->getHeaders())
-            ->get($this->getBaseURL() . $endpoint, $queryParams);
+
+        // Make the call, and retry if necessary (401002 error)
+        $response = $this->callWithRetry(function () use ($endpoint, $queryParams) {
+            return Http::withHeaders($this->getHeaders())
+                ->put($this->getBaseURL() . $endpoint, $queryParams);
+        });
 
         return $this->handleResponse($response);
     }
@@ -249,7 +275,8 @@ class HttpClient
     protected function handleResponse(Response $response)
     {
         if (!$response->successful()) {
-            return ErrorHandler::handle($response);
+            $errorHandler = new ErrorHandler($response);
+            return $errorHandler->outputMessage();
         }
 
         // Check the status code of the response
