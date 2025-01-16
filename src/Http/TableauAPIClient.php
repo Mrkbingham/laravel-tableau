@@ -7,13 +7,24 @@ use GuzzleHttp\Exception\RequestException;
 
 class TableauAPIClient
 {
+    /** @var Client */
     protected $client;
+    /** @var string */
     protected $baseUri;
+    /** @var string */
     protected $username;
+    /** @var string */
     protected $password;
+    /** @var string */
     protected $siteId;
+    /** @var string */
     protected $token;
 
+    /**
+     * TableauAPIClient constructor.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->client = new Client();
@@ -28,7 +39,7 @@ class TableauAPIClient
      *
      * @return string|null
      */
-    public function authenticate()
+    public function authenticate(): ?string
     {
         if ($this->token) {
             return $this->token; // Return the existing token if it's already set
@@ -38,9 +49,9 @@ class TableauAPIClient
             $response = $this->client->post($this->baseUri . '/api/3.10/auth/signin', [
                 'json' => [
                     'credentials' => [
-                        'name' => $this->username,
+                        'name'     => $this->username,
                         'password' => $this->password,
-                        'site' => [
+                        'site'     => [
                             'contentUrl' => $this->siteId
                         ]
                     ]
@@ -56,13 +67,31 @@ class TableauAPIClient
     }
 
     /**
+     * Sign out of Tableau and invalidate the session
+     *
+     * @return void
+     */
+    public function signOut(): void
+    {
+        $this->client->post($this->baseUri . '/api/3.10/auth/signout', [
+            'headers' => [
+                'X-Tableau-Auth' => $this->token,
+            ]
+        ]);
+
+        $this->token = null; // Clear the token after signout
+    }
+
+    /**
      * Parses an XML response.
      *
-     * @param string $xml
+     * @param string $xml The XML response.
+     *
+     * @throws Exception If the XML response cannot be parsed.
      *
      * @return array
      */
-    public static function parseXmlResponse($xml)
+    public static function parseXmlResponse(string $xml): array
     {
         // Load the XML file
         $data = simplexml_load_string($xml);
@@ -73,19 +102,5 @@ class TableauAPIClient
         // Json encode/decode to convert to array
         $json = json_encode($data);
         return json_decode($json, true);
-    }
-
-    /**
-     * Sign out of Tableau and invalidate the session
-     */
-    public function signOut()
-    {
-        $this->client->post($this->baseUri . '/api/3.10/auth/signout', [
-            'headers' => [
-                'X-Tableau-Auth' => $this->token,
-            ]
-        ]);
-
-        $this->token = null; // Clear the token after signout
     }
 }
