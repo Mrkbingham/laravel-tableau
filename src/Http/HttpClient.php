@@ -70,16 +70,26 @@ class HttpClient
     /**
      * Makes a call to the Tableau API, taking in a callback so the endpoint can be re-tried on a 401002 error
      *
-     * @param callable $callback The callback to execute.
+     * @param callable $callback   The callback to execute.
+     * @param integer  $maxRetries The maximum number of retries.
+     * @param integer  $delay      The delay between retries in milliseconds.
      *
      * @return Response
      */
-    public function callWithRetry(callable $callback)
+    public function callWithRetry(callable $callback, int $maxRetries = 3, int $delay = 5000)
     {
-        $response = $callback();
+        $attempts = 0;
 
-        // If the response is not successful, check to see if it's a 401002 error
-        if (!$response->successful()) {
+        do {
+            $response = $callback();
+            $attempts++;
+
+            // If the response is successful, return it
+            if ($response->successful()) {
+                return $response;
+            }
+
+            // If the response is not successful, check to see if it's a 401002 error
             $errorHandler = new ErrorHandler($response);
             if ($errorHandler->errorCode() !== 401002) {
                 return $response;
@@ -89,10 +99,12 @@ class HttpClient
             $this->auth->setTokenExpiration(0);
             $this->auth->authenticate();
 
-            // Execute the callback again
-            $response = $callback();
-        }
+            // Delay before retrying (microseconds are 1 millionth of a second)
+            $microSeconds = $delay * 1000;
+            usleep($microSeconds);
+        } while ($attempts < $maxRetries);
 
+        // Return the last response if all retries fail
         return $response;
     }
 

@@ -35,7 +35,7 @@ class TableauAPI
      *
      * @return void
      */
-    public function __construct(AuthType $authType = AuthType::PAT)
+    public function __construct(AuthType $authType = AuthType::USERNAME)
     {
         // Initialize authentication
         $this->auth  = new TableauAuth($authType);
