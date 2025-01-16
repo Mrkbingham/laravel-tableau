@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="InterWorks Standard">
+    <description>Curator by InterWorks Coding Standards</description>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*Diff.php</exclude-pattern>
+    <arg name="extensions" value="php" />
+    <arg name="tab-width" value="4" />
+    <rule ref="Generic.Files.LineEndings">
+        <properties>
+            <property name="eolChar" value="\n" />
+        </properties>
+    </rule>
+
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array">
+                <element key="dd" value="null" />
+                <element key="is_empty" value="null" />
+                <element key="sizeof" value="count" />
+                <element key="print" value="echo" />
+                <element key="input" value="Request::input" />
+                <element key="ngettext" value="Utils::ngettext" />
+                <element key="file_get_contents" value="Utils::fileGetContents" />
+            </property>
+        </properties>
+        <exclude-pattern>*/Utils.php</exclude-pattern>
+        <exclude-pattern>*/php_worker.example.php</exclude-pattern>
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120" />
+            <property name="absoluteLineLimit" value="120" />
+        </properties>
+        <exclude-pattern>*/updates/*</exclude-pattern>
+        <exclude-pattern>*/lang.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.ControlStructures.InlineControlStructure"/>
+    <rule ref="Generic.PHP.LowerCaseConstant"/>
+    <rule ref="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen" />
+    <rule ref="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose" />
+    <rule ref="Squiz.WhiteSpace.ScopeClosingBrace" />
+    <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
+    <rule ref="Squiz.ControlStructures.ForLoopDeclaration" />
+    <rule ref="Squiz.ControlStructures.LowercaseDeclaration" />
+    <rule ref="Squiz.Functions.LowercaseFunctionKeywords" />
+    <rule ref="Squiz.Functions.FunctionDuplicateArgument" />
+    <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration.AsNotLower" />
+    <rule ref="Squiz.Scope.MethodScope" />
+    <rule ref="Squiz.WhiteSpace.ScopeKeywordSpacing" />
+    <rule ref="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned" />
+    <rule ref="Squiz.Classes.LowercaseClassKeywords" />
+
+    <!-- Camel case -->
+    <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps" />
+    <rule ref="PSR1.Methods.CamelCapsMethodName" />
+
+    <!-- PHPDoc rules -->
+    <rule ref="Squiz.Commenting.FunctionComment"/>
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
+    <rule ref="Squiz.Commenting.VariableComment"/>
+
+    <!-- Slevomat rules -->
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
+    <rule ref="SlevomatCodingStandard.Classes.ClassStructure"/>
+</ruleset>

@@ -37,9 +37,9 @@ class AuthenticationService
             ],
         ]);
 
-        $data = json_decode($response->getBody()->getContents(), true);
+        $data            = json_decode($response->getBody()->getContents(), true);
         $this->authToken = $data['credentials']['token'];
-        $this->siteId = $data['credentials']['site']['id'];
+        $this->siteId    = $data['credentials']['site']['id'];
     }
 
     /**
