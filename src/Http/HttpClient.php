@@ -49,7 +49,7 @@ class HttpClient
     /**
      * HttpClient constructor.
      *
-     * @param TableauAuth|null $tableauAuth The auth instance to use for requests
+     * @param TableauAuth|null $tableauAuth The auth instance to use for requests.
      *
      * @return void
      */
@@ -113,7 +113,7 @@ class HttpClient
      *
      * @param string $endpoint The endpoint to send the request to.
      *
-     * @return array|boolean
+     * @return array|boolean|Response
      */
     public function delete(string $endpoint)
     {
@@ -136,7 +136,7 @@ class HttpClient
      * @param string $endpoint    The endpoint to send the request to.
      * @param array  $queryParams The query parameters to send with the request.
      *
-     * @return array|boolean
+     * @return array|boolean|Response
      */
     public function get(string $endpoint, array $queryParams = [])
     {
@@ -199,7 +199,7 @@ class HttpClient
      *
      * @throws Exception If the first key in the body array is 'tsRequest', a common error.
      *
-     * @return array|boolean
+     * @return array|boolean|Response
      */
     public function put(string $endpoint, array $body = []): array|bool
     {
@@ -285,7 +285,7 @@ class HttpClient
      *
      * @param Response $response The response object.
      *
-     * @return array|boolean
+     * @return array|boolean|Response
      */
     protected function handleResponse(Response $response)
     {

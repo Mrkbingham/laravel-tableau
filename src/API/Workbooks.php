@@ -36,16 +36,26 @@ class Workbooks
      *
      * @see https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref_workbooks_and_views.htm#add_tags_to_workbook
      *
-     * @param string $workbookID The ID of the workbook to add tags to.
-     * @param array  $tags       An array of tags to add to the workbook.
+     * @param string   $workbookID The ID of the workbook to add tags to.
+     * @param string[] $tags       An array of tags to add to the workbook.
      *
      * @throws Exception This method is not yet implemented.
      *
-     * @return void
+     * @return array|Response
      */
     public function addTags(string $workbookID, array $tags)
     {
-        throw new Exception('workbooks()->addTags() is not yet implemented');
+        $endpoint = "/sites/{$this->siteID}/workbooks/{$workbookID}/tags";
+
+        // Build the payload
+        $tagsToAdd = [];
+        foreach ($tags as $tag) {
+            $tagsToAdd[] = ['label' => $tag];
+        }
+        $body = ['tags' => ['tag' => $tagsToAdd]];
+
+        // Update the workbook with the new tags
+        return $this->client->put($endpoint, $body);
     }
 
     /**
@@ -58,11 +68,16 @@ class Workbooks
      *
      * @throws Exception This method is not yet implemented.
      *
-     * @return void
+     * @return boolean
      */
     public function deleteTag(string $workbookID, string $tag)
     {
-        throw new Exception('workbooks()->deleteTag() is not yet implemented');
+        $endpoint = "/sites/{$this->siteID}/workbooks/{$workbookID}/tags/{$tag}";
+
+        // Delete the tag from the workbook
+        $response = $this->client->delete($endpoint);
+
+        return $response->successful();
     }
 
     /**
@@ -74,7 +89,7 @@ class Workbooks
      *
      * @param string $workbookID The ID of the workbook to delete.
      *
-     * @return array
+     * @return boolean
      */
     public function delete(string $workbookID)
     {
@@ -94,14 +109,14 @@ class Workbooks
      *
      * @param string $workbookID The ID of the workbook to download.
      * @param array  $parameters If true, the workbook is downloaded with its extract.
-     *               - includeExtract (bool): If true, the workbook is downloaded with its extract.
+     *               - includeExtract (boolean): If true, the workbook is downloaded with its extract.
      *
      * @return array
      */
     public function download(string $workbookID, array $parameters = [])
     {
         // Make sure the parameters are valid
-        $allowedParameters = ['includeExtract' => 'bool'];
+        $allowedParameters = ['includeExtract' => 'boolean'];
         HttpClient::validateParameters($allowedParameters, $parameters);
 
         // Set the endpoint and make the request
@@ -213,13 +228,13 @@ class Workbooks
      * @param string  $workbookID     The ID of the workbook to download.
      * @param integer $revisionNumber The revision number of the workbook to download.
      * @param array   $parameters     The query parameters to include in the request.
-     *                - includeExtract (bool): The maximum age of the cached PPTX in minutes.
+     *                - includeExtract (boolean): The maximum age of the cached PPTX in minutes.
      *
      * @return array
      */
     public function downloadRevision(string $workbookID, int $revisionNumber, array $parameters = []) {
         // Make sure the parameters are valid
-        $allowedParameters = ['includeExtract' => 'bool'];
+        $allowedParameters = ['includeExtract' => 'boolean'];
         HttpClient::validateParameters($allowedParameters, $parameters);
 
         // Set the endpoint and make the request
@@ -292,12 +307,12 @@ class Workbooks
      * @param string $file       The path to the workbook file to publish.
      * @param string $name       The name of the workbook to publish.
      * @param array  $parameters Optional query parameters.
-     *               - overwrite (bool): If true, the workbook is overwritten if it already exists.
-     *               - skipConnectionCheck (bool): Skips checking if a non-published connection of a workbook is
+     *               - overwrite (boolean): If true, the workbook is overwritten if it already exists.
+     *               - skipConnectionCheck (boolean): Skips checking if a non-published connection of a workbook is
      *                 reachable.
      *               - uploadSessionId (string): The ID of the upload session to use for the workbook.
      *               - workbookType (string): The type of workbook to publish. Possible values: twb, twbx.
-     *               - asJob (bool): If true, the request is run asynchronously.
+     *               - asJob (boolean): If true, the request is run asynchronously.
      *
      * @throws Exception This method is not yet implemented.
      *
@@ -318,14 +333,14 @@ class Workbooks
      *
      * @param string $workbookID The ID of the workbook.
      * @param array  $parameters Optional query parameters.
-     *               - includeUsageStatistics (bool): If true, includes usage statistics for the views.
+     *               - includeUsageStatistics (boolean): If true, includes usage statistics for the views.
      *
      * @return array
      */
     public function queryViews(string $workbookID, array $parameters = [])
     {
         // Make sure the parameters are valid
-        $allowedParameters = ['includeUsageStatistics' => 'bool'];
+        $allowedParameters = ['includeUsageStatistics' => 'boolean'];
         HttpClient::validateParameters($allowedParameters, $parameters);
 
         // Set the endpoint and make the request
@@ -345,7 +360,7 @@ class Workbooks
      *
      * @param string $workbookID The ID of the workbook to retrieve.
      * @param array  $parameters Optional query parameters.
-     *               - includeUsageStatistics (bool): If true, includes usage statistics for the views.
+     *               - includeUsageStatistics (boolean): If true, includes usage statistics for the views.
      *
      * @return array
      */
@@ -367,7 +382,7 @@ class Workbooks
      *
      * @param string $contentURL The ID of the workbook to retrieve.
      * @param array  $parameters Optional query parameters.
-     *               - includeUsageStatistics (bool): If true, includes usage statistics for the views.
+     *               - includeUsageStatistics (boolean): If true, includes usage statistics for the views.
      *
      * @return array
      */
