@@ -11,44 +11,51 @@
     "error_responses": {
         "400": {
             "error": {
-                "code": "400000",
                 "summary": "Bad Request",
-                "detail": "The request is invalid or malformed"
+                "detail": "The request is invalid or malformed",
+                "code": "400000"
             }
         },
         "401": {
             "error": {
-                "code": "401000",
                 "summary": "Unauthorized",
-                "detail": "Authentication required"
+                "detail": "Authentication required",
+                "code": "401000"
             }
         },
         "401002": {
             "error": {
-                "code": "401002",
                 "summary": "Unauthorized",
-                "detail": "Invalid authentication credentials"
+                "detail": "Invalid authentication credentials",
+                "code": "401002"
             }
         },
         "403": {
             "error": {
-                "code": "403000",
                 "summary": "Forbidden",
-                "detail": "Insufficient permissions"
+                "detail": "Insufficient permissions",
+                "code": "403000"
+            }
+        },
+        "403004": {
+            "error": {
+                "summary": "Forbidden",
+                "detail": "[USER] isn't authorized to [ACTION] [RESOURCE]",
+                "code": "403004"
             }
         },
         "404": {
             "error": {
-                "code": "404000",
                 "summary": "Not Found",
-                "detail": "The requested resource was not found"
+                "detail": "The requested resource was not found",
+                "code": "404000"
             }
         },
         "500": {
             "error": {
-                "code": "500000",
                 "summary": "Internal Server Error",
-                "detail": "An unexpected error occurred"
+                "detail": "An unexpected error occurred",
+                "code": "500000"
             }
         }
     }

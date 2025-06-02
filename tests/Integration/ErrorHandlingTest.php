@@ -26,12 +26,16 @@ describe('ErrorHandlingTest', function () {
     });
 
     it('handles permission denied scenarios', function () {
-        TableauMock::mockPermissionDenied();
+        // Signin
+        $api = new TableauAPI();
 
-        $api = new TableauAPI(AuthType::PAT);
+        // Mock a permission denied response for deleting a workbook
+        $this->resetMocks();
+        TableauMock::mockPermissionDenied("403004");
 
         try {
-            $api->deleteWorkbook('restricted-workbook');
+            $api->workbooks()->delete('e4ea0ab5-bf97-42e6-936e-eb654b7a2aab');
+            // $api->workbooks()->delete('unauthorized-workbook');
         } catch (APIException $e) {
             expect($e->getStatusCode())->toBe(403);
             expect($e->getErrorMessage())->toContain('Forbidden');
