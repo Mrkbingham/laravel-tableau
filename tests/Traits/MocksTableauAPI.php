@@ -1,10 +1,9 @@
 <?php
 
-namespace InterWorks\Tableau\Tests\Mocks;
+namespace InterWorks\Tableau\Tests\Traits;
 
 use Illuminate\Support\Facades\Config;
 use InterWorks\Tableau\Tests\Mocks\TableauMock;
-use InterWorks\Tableau\Tests\TestCase;
 
 /**
  * Base test class with built-in mocking capabilities
@@ -12,41 +11,8 @@ use InterWorks\Tableau\Tests\TestCase;
  * This class provides a foundation for all Tableau API tests with pre-configured
  * mocking, eliminating the need for real server connections.
  */
-abstract class MockableTestCase extends TestCase
+trait MocksTableauAPI
 {
-    /**
-     * Set up before each test
-     *
-     * This initializes the TableauMock system and sets up test configuration.
-     *
-     * @return void
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Set up test configuration
-        $this->setupTestConfig();
-
-        // Initialize mocking system
-        TableauMock::init();
-    }
-
-    /**
-     * Tear down after each test
-     *
-     * This resets the TableauMock state to ensure clean tests.
-     *
-     * @return void
-     */
-    protected function tearDown(): void
-    {
-        // Reset mocks after each test
-        TableauMock::reset();
-
-        parent::tearDown();
-    }
-
     /**
      * Set up test-specific configuration
      *

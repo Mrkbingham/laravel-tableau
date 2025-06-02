@@ -2,6 +2,12 @@
 
 use InterWorks\Tableau\TableauAPI;
 
+
+beforeEach(function () {
+    // Setup mocked endpoints
+    $this->enableAllMocks();
+});
+
 describe('TableauAPITest', function() {
     it('can authenticate with product version', function () {
         if (!Config::get('tableau.product_version')) {

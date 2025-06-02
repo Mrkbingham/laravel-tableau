@@ -5,10 +5,13 @@ namespace InterWorks\Tableau\Tests;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use InterWorks\Tableau\TableauServiceProvider;
+use InterWorks\Tableau\Tests\Traits\MocksTableauAPI;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    use MocksTableauAPI;
+
     protected function setUp(): void
     {
         parent::setUp();
