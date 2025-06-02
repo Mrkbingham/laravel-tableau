@@ -1,6 +1,7 @@
 <?php
 
 use InterWorks\Tableau\TableauAPI;
+use InterWorks\Tableau\Tests\Mocks\TableauMock;
 
 
 beforeEach(function () {
@@ -29,13 +30,17 @@ describe('TableauAPITest', function() {
         // Authenticate and retrieve the token
         $tableau = new TableauAPI();
         $originalToken = $tableau->auth()->getToken();
+
         // Logout
         $tableau->auth()->signOut();
 
         // Manually re-set the token to use the original token
         $tableau->auth()->setToken($originalToken);
 
-        // Try to make a request with the old token
+        // Now set up re-authentication scenario AFTER we have the original token
+        TableauMock::mockReAuth();
+
+        // Try to make a request with the old token - this should trigger re-authentication
         $workbookData = $tableau->workbooks()->getWorkbookById(env('TABLEAU_WORKBOOK_ID'));
 
         // Make sure there is a new token

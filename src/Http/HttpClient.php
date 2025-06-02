@@ -100,7 +100,7 @@ class HttpClient
             $this->auth->authenticate();
 
             // Delay before retrying (microseconds are 1 millionth of a second)
-            $microSeconds = $delay * 1000;
+            $microSeconds = $delay * 500;
             usleep($microSeconds);
         } while ($attempts < $maxRetries);
 

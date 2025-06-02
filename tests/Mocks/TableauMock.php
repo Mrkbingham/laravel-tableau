@@ -297,6 +297,9 @@ class TableauMock
      */
     public static function mockReAuth(): void
     {
+        // We need to override the previous mocks to ensure a clean state
+        self::reset();
+
         $callCount = 0;
 
         Http::fake([
@@ -308,9 +311,12 @@ class TableauMock
                     return Http::response(self::getFixture('general', 'error_responses')['401002'], 401);
                 }
 
-                // Auth endpoints work normally
+                // Auth endpoints work normally but return a NEW token
                 if (str_contains($request->url(), '/auth/signin')) {
-                    return Http::response(self::getFixture('auth', 'signin_success_pat'), 200);
+                    $authResponse = self::getFixture('auth', 'signin_success_pat');
+                    // Generate a new token for re-authentication
+                    $authResponse['credentials']['token'] = 'mock-auth-token-new-' . time();
+                    return Http::response($authResponse, 200);
                 }
 
                 // Second call succeeds with new token
