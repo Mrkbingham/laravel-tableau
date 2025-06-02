@@ -177,7 +177,7 @@ class HttpClient
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
 
-        // Make sure the first array key is NOT 'tsRequest'
+        // Make sure the first array key is NOT 'tsRequest' - this is a common error when using the API
         if (array_key_first($body) === 'tsRequest') {
             throw new Exception('The first key in the body array cannot be "tsRequest"');
         }

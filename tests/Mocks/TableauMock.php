@@ -2,6 +2,7 @@
 
 namespace InterWorks\Tableau\Tests\Mocks;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use ReflectionObject;
@@ -437,7 +438,7 @@ class TableauMock
     {
         Http::fake([
             self::$tableauUrl . '/api/*' => function ($request) {
-                throw new \Illuminate\Http\Client\ConnectionException('Network connection failed');
+                throw new ConnectionException('Network connection failed');
             }
         ]);
     }
@@ -494,9 +495,9 @@ class TableauMock
     public static function mockMalformedResponse(): void
     {
         Http::fake([
-            self::$tableauUrl . '/api/*' => Http::response(
+            self::$tableauUrl . '/api/*' => fn() => Http::response(
                 'Invalid JSON response {malformed',
-                200
+                400
             )
         ]);
     }

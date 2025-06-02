@@ -37,6 +37,7 @@ trait MocksTableauAPI
      */
     protected function enableAllMocks(): void
     {
+        $this->resetMocks();
         TableauMock::mockAll();
     }
 
@@ -134,5 +135,15 @@ trait MocksTableauAPI
     protected function customMock(string $endpoint, array $response, int $status = 200): void
     {
         TableauMock::customMock($endpoint, $response, $status);
+    }
+
+    /**
+     * Clear all mocks
+     *
+     * @return void
+     */
+    protected function resetMocks(): void
+    {
+        TableauMock::reset();
     }
 }
