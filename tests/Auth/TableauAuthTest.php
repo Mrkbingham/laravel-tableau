@@ -5,9 +5,14 @@ use Illuminate\Support\Facades\Http;
 use InterWorks\Tableau\Enums\AuthType;
 use InterWorks\Tableau\Exceptions\APIException;
 use InterWorks\Tableau\TableauAPI;
+use InterWorks\Tableau\Tests\Mocks\TableauMock;
 
 beforeEach(function () {
     $this->tableauURL = env('TABLEAU_URL');
+
+    // Initialize mocking system
+    TableauMock::init();
+    TableauMock::mockAuth();
 
     // Create a generic Tableau connection to re-use
     $this->tableau = new TableauAPI();
@@ -17,6 +22,7 @@ describe('TableauAuthTest', function() {
     it('can authenticate successfully and return a token', function () {
         // Assert that the returned token is correct
         expect($this->tableau->auth()->getToken())->not->toBeEmpty();
+        expect($this->tableau->auth()->getToken())->toBe('mock-auth-token-username-67890');
     });
 
     it('can authenticate with username', function () {
@@ -24,6 +30,7 @@ describe('TableauAuthTest', function() {
 
         // Assert that the returned token is correct
         expect($tableauWithUsername->auth()->getToken())->not->toBeEmpty();
+        expect($tableauWithUsername->auth()->getToken())->toBe('mock-auth-token-username-67890');
     });
 
     it('throws an exception on authentication failure', function () {
@@ -40,10 +47,9 @@ describe('TableauAuthTest', function() {
     });
 
     it('handles network errors gracefully', function () {
-        // Simulate a network error
-        Http::fake([
-            $this->tableauURL . '/api/*' => Http::response('Network error', 500)
-        ]);
+        // Reset mocks and simulate a network error
+        TableauMock::reset();
+        TableauMock::mockNetworkErrors();
 
         // Expect the APIException to be thrown
         $this->expectException(APIException::class);
