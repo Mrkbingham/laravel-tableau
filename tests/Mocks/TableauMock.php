@@ -530,14 +530,23 @@ class TableauMock
 
     /**
      * Mock permission denied
+     *
+     * @param string|null $errorCode Optional error code to use for the mock response.
+     *
+     * @return void
      */
-    public static function mockPermissionDenied(): void
+    public static function mockPermissionDenied(?string $errorCode = null): void
     {
+        $response = self::getFixture('general', 'error_responses')[$errorCode] ?? [
+            'error' => [
+                'summary' => 'Forbidden',
+                'detail'  => 'You do not have permission to access this resource.'
+            ]
+        ];
+
+        // Sets all API calls to return a 403 Forbidden response
         Http::fake([
-            self::$tableauUrl . '/api/*' => Http::response(
-                ['error' => ['summary' => 'Forbidden', 'detail' => 'Insufficient permissions']],
-                403
-            )
+            self::$tableauUrl . '/api/*' => Http::response($response, 403)
         ]);
     }
 
