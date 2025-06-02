@@ -3,7 +3,6 @@
 use InterWorks\Tableau\TableauAPI;
 use InterWorks\Tableau\Tests\Mocks\TableauMock;
 
-
 beforeEach(function () {
     // Setup mocked endpoints
     $this->enableAllMocks();
