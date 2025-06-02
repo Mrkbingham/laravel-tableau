@@ -1,0 +1,267 @@
+{
+    "datasources_list": {
+        "pagination": {
+            "pageNumber": "1",
+            "pageSize": "100",
+            "totalAvailable": "2"
+        },
+        "datasources": {
+            "datasource": [
+                {
+                    "id": "datasource-1-id",
+                    "name": "Sample Datasource 1",
+                    "contentUrl": "sample-datasource-1",
+                    "type": "hyper",
+                    "createdAt": "2024-01-01T10:00:00Z",
+                    "updatedAt": "2024-01-15T14:30:00Z",
+                    "project": {
+                        "id": "87654321-4321-4321-4321-210987654321",
+                        "name": "Test Project"
+                    },
+                    "owner": {
+                        "id": "11111111-1111-1111-1111-111111111111",
+                        "name": "John Doe"
+                    },
+                    "tags": {
+                        "tag": [
+                            {
+                                "label": "sample"
+                            },
+                            {
+                                "label": "data"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "datasource-2-id",
+                    "name": "Sample Datasource 2",
+                    "contentUrl": "sample-datasource-2",
+                    "type": "sqlserver",
+                    "createdAt": "2024-01-02T11:00:00Z",
+                    "updatedAt": "2024-01-16T15:30:00Z",
+                    "project": {
+                        "id": "87654321-4321-4321-4321-210987654321",
+                        "name": "Test Project"
+                    },
+                    "owner": {
+                        "id": "22222222-2222-2222-2222-222222222222",
+                        "name": "Jane Smith"
+                    }
+                }
+            ]
+        }
+    },
+    "datasource_sample": {
+        "datasource": {
+            "id": "datasource-1-id",
+            "name": "Sample Datasource 1",
+            "contentUrl": "sample-datasource-1",
+            "type": "hyper",
+            "createdAt": "2024-01-01T10:00:00Z",
+            "updatedAt": "2024-01-15T14:30:00Z",
+            "project": {
+                "id": "87654321-4321-4321-4321-210987654321",
+                "name": "Test Project"
+            },
+            "owner": {
+                "id": "11111111-1111-1111-1111-111111111111",
+                "name": "John Doe"
+            },
+            "tags": {
+                "tag": [
+                    {
+                        "label": "sample"
+                    },
+                    {
+                        "label": "data"
+                    }
+                ]
+            }
+        }
+    },
+    "users_list": {
+        "pagination": {
+            "pageNumber": "1",
+            "pageSize": "100",
+            "totalAvailable": "3"
+        },
+        "users": {
+            "user": [
+                {
+                    "id": "user-1-id",
+                    "name": "jane.doe@example.com",
+                    "siteRole": "Viewer",
+                    "locale": "en_US",
+                    "language": "en"
+                },
+                {
+                    "id": "user-2-id",
+                    "name": "john.smith@example.com",
+                    "siteRole": "Creator",
+                    "locale": "en_US",
+                    "language": "en"
+                },
+                {
+                    "id": "user-3-id",
+                    "name": "admin@example.com",
+                    "siteRole": "SiteAdministrator",
+                    "locale": "en_US",
+                    "language": "en"
+                }
+            ]
+        }
+    },
+    "user_sample": {
+        "user": {
+            "id": "user-1-id",
+            "name": "jane.doe@example.com",
+            "siteRole": "Viewer",
+            "locale": "en_US",
+            "language": "en"
+        }
+    },
+    "views_list": {
+        "pagination": {
+            "pageNumber": "1",
+            "pageSize": "100",
+            "totalAvailable": "3"
+        },
+        "views": {
+            "view": [
+                {
+                    "id": "view-1-id",
+                    "name": "Sales Dashboard",
+                    "contentUrl": "sales-dashboard",
+                    "viewUrlName": "SalesDashboard",
+                    "createdAt": "2024-01-01T10:00:00Z",
+                    "updatedAt": "2024-01-15T14:30:00Z",
+                    "workbook": {
+                        "id": "12345678-1234-1234-1234-123456789012"
+                    },
+                    "owner": {
+                        "id": "11111111-1111-1111-1111-111111111111",
+                        "name": "John Doe"
+                    },
+                    "project": {
+                        "id": "87654321-4321-4321-4321-210987654321",
+                        "name": "Test Project"
+                    },
+                    "tags": {
+                        "tag": [
+                            {
+                                "label": "dashboard"
+                            },
+                            {
+                                "label": "sales"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "view-2-id",
+                    "name": "Marketing Report",
+                    "contentUrl": "marketing-report",
+                    "viewUrlName": "MarketingReport",
+                    "createdAt": "2024-01-02T11:00:00Z",
+                    "updatedAt": "2024-01-16T15:30:00Z",
+                    "workbook": {
+                        "id": "12345678-1234-1234-1234-123456789012"
+                    },
+                    "owner": {
+                        "id": "22222222-2222-2222-2222-222222222222",
+                        "name": "Jane Smith"
+                    },
+                    "project": {
+                        "id": "87654321-4321-4321-4321-210987654321",
+                        "name": "Test Project"
+                    }
+                },
+                {
+                    "id": "view-3-id",
+                    "name": "Financial Overview",
+                    "contentUrl": "financial-overview",
+                    "viewUrlName": "FinancialOverview",
+                    "createdAt": "2024-01-03T12:00:00Z",
+                    "updatedAt": "2024-01-17T16:30:00Z",
+                    "workbook": {
+                        "id": "87654321-8765-4321-1234-567890123456"
+                    },
+                    "owner": {
+                        "id": "11111111-1111-1111-1111-111111111111",
+                        "name": "John Doe"
+                    },
+                    "project": {
+                        "id": "87654321-4321-4321-4321-210987654321",
+                        "name": "Test Project"
+                    }
+                }
+            ]
+        }
+    },
+    "view_sample": {
+        "view": {
+            "id": "view-1-id",
+            "name": "Sales Dashboard",
+            "contentUrl": "sales-dashboard",
+            "viewUrlName": "SalesDashboard",
+            "createdAt": "2024-01-01T10:00:00Z",
+            "updatedAt": "2024-01-15T14:30:00Z",
+            "workbook": {
+                "id": "12345678-1234-1234-1234-123456789012"
+            },
+            "owner": {
+                "id": "11111111-1111-1111-1111-111111111111",
+                "name": "John Doe"
+            },
+            "project": {
+                "id": "87654321-4321-4321-4321-210987654321",
+                "name": "Test Project"
+            },
+            "tags": {
+                "tag": [
+                    {
+                        "label": "dashboard"
+                    },
+                    {
+                        "label": "sales"
+                    }
+                ]
+            }
+        }
+    },
+    "projects_list": {
+        "pagination": {
+            "pageNumber": "1",
+            "pageSize": "100",
+            "totalAvailable": "2"
+        },
+        "projects": {
+            "project": [
+                {
+                    "id": "87654321-4321-4321-4321-210987654321",
+                    "name": "Test Project",
+                    "description": "A test project for mocking",
+                    "contentPermissions": "ManagedByOwner",
+                    "parentProjectId": null
+                },
+                {
+                    "id": "12345678-8765-4321-1234-567890123456",
+                    "name": "Production Project",
+                    "description": "Production environment project",
+                    "contentPermissions": "LockedToProject",
+                    "parentProjectId": null
+                }
+            ]
+        }
+    },
+    "project_sample": {
+        "project": {
+            "id": "87654321-4321-4321-4321-210987654321",
+            "name": "Test Project",
+            "description": "A test project for mocking",
+            "contentPermissions": "ManagedByOwner",
+            "parentProjectId": null
+        }
+    }
+}
