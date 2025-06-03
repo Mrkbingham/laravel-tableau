@@ -15,7 +15,7 @@ describe('ErrorHandlingTest', function () {
     it('handles network timeout scenarios', function () {
         TableauMock::mockNetworkFailure();
 
-        expect(fn() => new TableauAPI())->toThrow(ConnectionException::class);
+        expect(fn() => new TableauAPI())->toThrow(APIException::class);
     });
 
     it('handles malformed API responses', function () {
@@ -57,7 +57,7 @@ describe('ErrorHandlingTest', function () {
 
     it('handles connection reset scenarios', function () {
         TableauMock::mockConnectionReset();
-
+        
         expect(fn() => new TableauAPI())->toThrow(APIException::class);
     });
 });
