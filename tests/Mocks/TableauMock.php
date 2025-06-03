@@ -2,6 +2,8 @@
 
 namespace InterWorks\Tableau\Tests\Mocks;
 
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -31,41 +33,6 @@ class TableauMock
     {
         self::$tableauUrl = Config::get('tableau.url', 'https://tableau-server.example.com');
         self::loadFixtures();
-    }
-
-    /**
-     * Load all fixture files
-     *
-     * @return void
-     */
-    protected static function loadFixtures(): void
-    {
-        $fixturesPath = __DIR__ . '/../Fixtures/';
-
-        $fixtureFiles = [
-            'auth' => 'auth_responses.json',
-            'workbooks' => 'workbook_responses.json',
-            'general' => 'general_responses.json',
-            'api' => 'api_responses.json',
-        ];
-
-        foreach ($fixtureFiles as $key => $file) {
-            $content = file_get_contents($fixturesPath . $file);
-            self::$fixtures[$key] = json_decode($content, true);
-        }
-    }
-
-    /**
-     * Get a fixture by category and key
-     *
-     * @param string $category The category of the fixture (e.g., 'auth', 'workbooks').
-     * @param string $key      The specific key within the category.
-     *
-     * @return array
-     */
-    public static function getFixture(string $category, string $key): array
-    {
-        return self::$fixtures[$category][$key] ?? [];
     }
 
     /**
@@ -350,19 +317,6 @@ class TableauMock
     }
 
     /**
-     * Mock authentication scenarios
-     */
-    public static function mockAuthentication(): void
-    {
-        Http::fake([
-            self::$tableauUrl . '/api/*/auth/signin' => Http::response(
-                self::getFixture('auth', 'signin_success_pat'),
-                200
-            )
-        ]);
-    }
-
-    /**
      * Mock authentication failure
      */
     public static function mockAuthenticationFailure(): void
@@ -568,15 +522,19 @@ class TableauMock
 
     /**
      * Mock connection reset
+     *
+     * This simulates a scenario where the connection to the Tableau Server is reset,
+     * useful for testing how the application handles abrupt disconnections.
+     *
+     * @return void
      */
     public static function mockConnectionReset(): void
     {
+        self::reset();
         Http::fake([
-            self::$tableauUrl . '/api/*' => function ($request) {
-                throw new \Illuminate\Http\Client\RequestException(
-                    new \GuzzleHttp\Psr7\Response(0, [], 'Connection reset by peer')
-                );
-            }
+            self::$tableauUrl . '/api/*' => fn ($request) => Create::rejectionFor(
+                new ConnectException("The connection was reset", $request->toPsrRequest())
+            ),
         ]);
     }
 
@@ -751,5 +709,40 @@ class TableauMock
         self::mockUsersOperations();
         self::mockProjectsOperations();
         self::mockServerInfo();
+    }
+
+    /**
+     * Load all fixture files
+     *
+     * @return void
+     */
+    protected static function loadFixtures(): void
+    {
+        $fixturesPath = __DIR__ . '/../Fixtures/';
+
+        $fixtureFiles = [
+            'auth' => 'auth_responses.json',
+            'workbooks' => 'workbook_responses.json',
+            'general' => 'general_responses.json',
+            'api' => 'api_responses.json',
+        ];
+
+        foreach ($fixtureFiles as $key => $file) {
+            $content = file_get_contents($fixturesPath . $file);
+            self::$fixtures[$key] = json_decode($content, true);
+        }
+    }
+
+    /**
+     * Get a fixture by category and key
+     *
+     * @param string $category The category of the fixture (e.g., 'auth', 'workbooks').
+     * @param string $key      The specific key within the category.
+     *
+     * @return array
+     */
+    public static function getFixture(string $category, string $key): array
+    {
+        return self::$fixtures[$category][$key] ?? [];
     }
 }
