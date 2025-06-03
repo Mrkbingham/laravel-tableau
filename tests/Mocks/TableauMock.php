@@ -84,21 +84,56 @@ class TableauMock
     {
         $siteId = self::getFixture('auth', 'signin_success_pat')['credentials']['site']['id'];
 
+        self::mockWorkbookViews();
+
+        $testID = self::getFixture('workbooks', 'workbook_sample')['workbook']['id'];
+
         // Get workbook by ID
         Http::fake([
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/workbooks/*' => function ($request) {
-                $uri = $request->url();
 
-                // Handle different workbook endpoints
-                if (str_contains($uri, '/views')) {
-                    return Http::response(self::getFixture('workbooks', 'workbook_views'), 200);
+
+            // Add Tags to Workbook
+            self::$tableauUrl . "/api/*/sites/$siteId/workbooks/$testID/tags" => function ($request) {
+                // Must be PUT
+                if ($request->method() === 'PUT') {
+                    $body = $request->data();
+                    // Simulate adding tags
+                    if (isset($body['tags']) && is_array($body['tags'])) {
+                        return Http::response(['tags' => $body['tags']], 201);
+                    }
+                    return Http::response(['error' => 'Invalid tags'], 400);
                 }
 
-                if (str_contains($uri, '/revisions')) {
-                    return Http::response(self::getFixture('workbooks', 'workbook_revisions'), 200);
-                }
+                // If not PUT, return 404
+                return Http::response(['error' => 'Tags not found'], 404);
+            },
 
-                if (str_contains($uri, '/content')) {
+            // Delete Tag from Workbook
+            self::$tableauUrl . "/api/*/sites/$siteId/workbooks/$testID/tags/*" => function ($request) {
+                // Must be DELETE
+                if ($request->method() === 'DELETE') {
+                    return Http::response('', 204);
+                }
+                // If not DELETE, return 404
+                return Http::response(['error' => 'Tag not found'], 404);
+            },
+
+            // Get Workbook
+            // Delete Workbook
+            self::$tableauUrl . "/api/*/sites/$siteId/workbooks/$testID" => function ($request) {
+                if ($request->method() === 'GET') {
+                    return Http::response(self::getFixture('workbooks', 'workbook_sample'), 200);
+                } elseif ($request->method() === 'DELETE') {
+                    // Handle DELETE request for workbook
+                    return Http::response('', 204);
+                }
+                // If not GET or DELETE, return 404
+                return Http::response(['error' => 'Workbook not found'], 404);
+            },
+
+            // Download Workbook
+            self::$tableauUrl . "/api/*/sites/$siteId/workbooks/$testID/content" => function ($request) {
+                if ($request->method() === 'GET') {
                     // Mock file download - return binary-like content
                     return Http::response('mock-workbook-content', 200, [
                         'Content-Type' => 'application/octet-stream',
@@ -106,35 +141,67 @@ class TableauMock
                     ]);
                 }
 
-                if (str_contains($uri, '/pdf')) {
+                // If not GET, return 404
+                return Http::response(['error' => 'Workbook content not found'], 404);
+            },
+
+            // Download Workbook PDF
+            self::$tableauUrl . "/api/*/sites/$siteId/workbooks/$testID/pdf" => function ($request) {
+                if ($request->method() === 'GET') {
+                    // Mock PDF download
                     return Http::response('mock-pdf-content', 200, [
-                        'Content-Type' => 'application/pdf'
+                        'Content-Type' => 'application/pdf',
+                        'Content-Disposition' => 'attachment; filename="workbook.pdf"'
                     ]);
                 }
 
-                if (str_contains($uri, '/powerpoint')) {
+                // If not GET, return 404
+                return Http::response(['error' => 'Workbook PDF not found'], 404);
+            },
+
+            // Download Workbook PowerPoint
+            self::$tableauUrl . "/api/*/sites/$siteId/workbooks/$testID/powerpoint" => function ($request) {
+                if ($request->method() === 'GET') {
+                    // Mock PowerPoint download
                     return Http::response('mock-pptx-content', 200, [
-                        'Content-Type' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+                        'Content-Type' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                        'Content-Disposition' => 'attachment; filename="workbook.pptx"'
                     ]);
                 }
 
-                if (str_contains($uri, '/downgradeInfo')) {
+                // If not GET, return 404
+                return Http::response(['error' => 'Workbook PowerPoint not found'], 404);
+            },
+
+            // Download Workbook Revision
+            self::$tableauUrl . "/api/*/sites/$siteId/workbooks/$testID/revisions/*/content" => function ($request) {
+                if ($request->method() === 'GET') {
+                    // Mock revision download
+                    return Http::response('mock-revision-content', 200, [
+                        'Content-Type' => 'application/octet-stream',
+                        'Content-Disposition' => 'attachment; filename="revision.twbx"'
+                    ]);
+                }
+
+                // If not GET, return 404
+                return Http::response(['error' => 'Workbook revision content not found'], 404);
+            },
+
+            // Get Workbook Downgrade Info
+            self::$tableauUrl . "/api/*/sites/$siteId/workbooks/$testID/downgradeInfo" => function ($request) {
+                // Ensure the productVersion is set
+                if (!isset($request->data()['productVersion'])) {
+                    return Http::response(['error' => 'Product version is required'], 400);
+                }
+
+                if ($request->method() === 'GET') {
+                    // Mock downgrade info
                     return Http::response(self::getFixture('workbooks', 'workbook_downgrade_info'), 200);
                 }
 
-                // Handle DELETE requests
-                if ($request->method() === 'DELETE') {
-                    return Http::response('', 204);
-                }
-
-                // Handle workbook not found
-                if (str_contains($uri, 'nonexistent-workbook')) {
-                    return Http::response(self::getFixture('workbooks', 'workbook_not_found'), 404);
-                }
-
-                // Default workbook response
-                return Http::response(self::getFixture('workbooks', 'workbook_sample'), 200);
-            }
+                // If not GET, return 404
+                return Http::response(['error' => 'Downgrade info not found'], 404);
+            },
         ]);
     }
 
@@ -331,30 +398,6 @@ class TableauMock
     }
 
     /**
-     * Mock workbook operations
-     */
-    public static function mockWorkbookOperations(): void
-    {
-        $siteId = self::getFixture('auth', 'signin_success_pat')['credentials']['site']['id'];
-
-        Http::fake([
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/workbooks' => Http::response(
-                self::getFixture('workbooks', 'workbooks_list'),
-                200
-            ),
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/workbooks/*' => function ($request) {
-                $uri = $request->url();
-
-                if (preg_match('/workbook-123/', $uri)) {
-                    return Http::response(self::getFixture('workbooks', 'workbook_sample'), 200);
-                }
-
-                return Http::response(self::getFixture('workbooks', 'workbook_not_found'), 404);
-            }
-        ]);
-    }
-
-    /**
      * Mock token expiration scenario
      */
     public static function mockTokenExpiration(): void
@@ -539,143 +582,6 @@ class TableauMock
     }
 
     /**
-     * Mock Views API endpoints
-     */
-    public static function mockViewsOperations(): void
-    {
-        $siteId = self::getFixture('auth', 'signin_success_pat')['credentials']['site']['id'];
-
-        Http::fake([
-            // List all views on site
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/views' => Http::response(
-                self::getFixture('api', 'views_list'),
-                200
-            ),
-            // Get specific view
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/views/*' => function ($request) {
-                $uri = $request->url();
-
-                if (preg_match('/view-1-id/', $uri)) {
-                    return Http::response(self::getFixture('api', 'view_sample'), 200);
-                }
-
-                return Http::response(['error' => ['summary' => 'View not found']], 404);
-            }
-        ]);
-    }
-
-    /**
-     * Mock Datasources API endpoints
-     */
-    public static function mockDatasourcesOperations(): void
-    {
-        $siteId = self::getFixture('auth', 'signin_success_pat')['credentials']['site']['id'];
-
-        Http::fake([
-            // List all datasources on site
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/datasources' => Http::response(
-                self::getFixture('api', 'datasources_list'),
-                200
-            ),
-            // Get specific datasource
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/datasources/*' => function ($request) {
-                $uri = $request->url();
-
-                if (str_contains($uri, '/content')) {
-                    // Mock datasource download
-                    return Http::response('mock-datasource-content', 200, [
-                        'Content-Type' => 'application/octet-stream',
-                        'Content-Disposition' => 'attachment; filename="datasource.tdsx"'
-                    ]);
-                }
-
-                if (preg_match('/datasource-1-id/', $uri)) {
-                    return Http::response(self::getFixture('api', 'datasource_sample'), 200);
-                }
-
-                // Handle DELETE requests
-                if ($request->method() === 'DELETE') {
-                    return Http::response('', 204);
-                }
-
-                return Http::response(['error' => ['summary' => 'Datasource not found']], 404);
-            }
-        ]);
-    }
-
-    /**
-     * Mock Users API endpoints
-     */
-    public static function mockUsersOperations(): void
-    {
-        $siteId = self::getFixture('auth', 'signin_success_pat')['credentials']['site']['id'];
-
-        Http::fake([
-            // List all users on site
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/users' => Http::response(
-                self::getFixture('api', 'users_list'),
-                200
-            ),
-            // Get specific user
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/users/*' => function ($request) {
-                $uri = $request->url();
-
-                if (preg_match('/user-1-id/', $uri)) {
-                    return Http::response(self::getFixture('api', 'user_sample'), 200);
-                }
-
-                // Handle DELETE requests
-                if ($request->method() === 'DELETE') {
-                    return Http::response('', 204);
-                }
-
-                // Handle PUT/PATCH requests (update user)
-                if (in_array($request->method(), ['PUT', 'PATCH'])) {
-                    return Http::response(self::getFixture('api', 'user_sample'), 200);
-                }
-
-                return Http::response(['error' => ['summary' => 'User not found']], 404);
-            }
-        ]);
-    }
-
-    /**
-     * Mock Projects API endpoints
-     */
-    public static function mockProjectsOperations(): void
-    {
-        $siteId = self::getFixture('auth', 'signin_success_pat')['credentials']['site']['id'];
-
-        Http::fake([
-            // List all projects on site
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/projects' => Http::response(
-                self::getFixture('api', 'projects_list'),
-                200
-            ),
-            // Get specific project
-            self::$tableauUrl . '/api/*/sites/' . $siteId . '/projects/*' => function ($request) {
-                $uri = $request->url();
-
-                if (preg_match('/87654321-4321-4321-4321-210987654321/', $uri)) {
-                    return Http::response(self::getFixture('api', 'project_sample'), 200);
-                }
-
-                // Handle DELETE requests
-                if ($request->method() === 'DELETE') {
-                    return Http::response('', 204);
-                }
-
-                // Handle PUT/PATCH requests (update project)
-                if (in_array($request->method(), ['PUT', 'PATCH'])) {
-                    return Http::response(self::getFixture('api', 'project_sample'), 200);
-                }
-
-                return Http::response(['error' => ['summary' => 'Project not found']], 404);
-            }
-        ]);
-    }
-
-    /**
      * Mock View image/PDF export endpoints
      */
     public static function mockViewExports(): void
@@ -694,21 +600,6 @@ class TableauMock
                 ['Content-Type' => 'application/pdf']
             )
         ]);
-    }
-
-    /**
-     * Mock comprehensive API operations for all resources
-     */
-    public static function mockAllResources(): void
-    {
-        self::init();
-        self::mockAuthentication();
-        self::mockWorkbookOperations();
-        self::mockViewsOperations();
-        self::mockDatasourcesOperations();
-        self::mockUsersOperations();
-        self::mockProjectsOperations();
-        self::mockServerInfo();
     }
 
     /**

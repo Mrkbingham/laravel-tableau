@@ -5,10 +5,11 @@ use InterWorks\Tableau\API\Workbooks;
 use InterWorks\Tableau\TableauAPI;
 
 beforeEach(function () {
-    $this->siteId = Config::get('tableau.site_id');
+    // Setup mocked endpoints
+    $this->enableAllMocks();
 
-    // Initialize the Workbooks class with a token
     $this->tableau = new TableauAPI();
+    $this->workbookID = '12345678-1234-1234-1234-123456789012';
 });
 
 describe('WorkbooksTest', function () {
@@ -51,9 +52,8 @@ describe('WorkbooksTest', function () {
     it('can getWorkbookById', function () {
         // Call the method to get a workbook by ID
         $workbookContentURL = env('TABLEAU_WORKBOOK_CONTENT_URL');
-        $workbookID = env('TABLEAU_WORKBOOK_ID');
         $workbookName = env('TABLEAU_WORKBOOK_NAME');
-        $response = $this->tableau->workbooks()->getWorkbookById($workbookID);
+        $response = $this->tableau->workbooks()->getWorkbookById($this->workbookID);
 
         // Assert the response contains the correct workbook data
         expect($response)->toHaveKey('workbook');
