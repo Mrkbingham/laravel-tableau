@@ -367,6 +367,7 @@ class TableauMock
      */
     public static function mockAuthenticationFailure(): void
     {
+        self::reset();
         Http::fake([
             self::$tableauUrl . '/api/*/auth/signin' => Http::response(
                 self::getFixture('auth', 'signin_error_401'),

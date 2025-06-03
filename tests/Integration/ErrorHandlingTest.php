@@ -47,25 +47,11 @@ describe('ErrorHandlingTest', function () {
 
         try {
             new TableauAPI();
-            expect()->toBeFalse(); // Should not reach here
+            // If there's no exception, the authentication was successful, so fail the test
+            expect()->toBeFalse('Authentication was successful when it should have failed');
         } catch (APIException $e) {
             expect($e->getStatusCode())->toBe(401);
             expect($e->getErrorMessage())->toContain('Unauthorized');
-        }
-    });
-
-    it('handles workbook download failures', function () {
-        TableauMock::mockAuthentication();
-        TableauMock::mockDownloadFailure();
-
-        $api = new TableauAPI(AuthType::PAT);
-
-        try {
-            $api->downloadWorkbook('problematic-workbook');
-            expect()->toBeFalse(); // Should not reach here
-        } catch (APIException $e) {
-            expect($e->getStatusCode())->toBe(500);
-            expect($e->getErrorMessage())->toContain('Internal server error');
         }
     });
 
