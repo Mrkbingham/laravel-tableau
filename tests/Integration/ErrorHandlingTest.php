@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Client\ConnectionException;
-use InterWorks\Tableau\Enums\AuthType;
 use InterWorks\Tableau\Exceptions\APIException;
 use InterWorks\Tableau\TableauAPI;
 use InterWorks\Tableau\Tests\Mocks\TableauMock;
