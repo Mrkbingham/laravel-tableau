@@ -34,8 +34,24 @@ class Tableau extends Connector
     /** @var Site The site connected to. */
     protected ?Site $site = null;
 
-    public function __construct(protected AuthType $authType) {}
+    /**
+     * The constructor for the Tableau connector.
+     *
+     * @param AuthType $authType The type of authentication to use.
+     *
+     * @return void
+     */
+    public function __construct(protected AuthType $authType) {
+        //
+    }
 
+    /**
+     * This method is called when the request is being prepared, and handles the global authentication for the connector.
+     *
+     * @param PendingRequest $pendingRequest The pending request that is being prepared.
+     *
+     * @return void
+     */
     public function boot(PendingRequest $pendingRequest): void
     {
         // If we've already authenticated, or are authenticating, we can skip this
@@ -50,6 +66,16 @@ class Tableau extends Connector
 
         // Add the token to the header
         $pendingRequest->authenticate(new HeaderAuthenticator($this->token, 'X-Tableau-Auth'));
+    }
+
+    /**
+     * The Base URL of the API.
+     *
+     * @return string
+     */
+    public function resolveBaseUrl(): string
+    {
+        return config('tableau.url') . '/api/' . VersionService::getAPIVersion();
     }
 
     /**
@@ -93,6 +119,21 @@ class Tableau extends Connector
     }
 
     /**
+     * Returns the site connected to.
+     *
+     * @throws RuntimeException If the site is not set.
+     *
+     * @return Site|null
+     */
+    public function getSite(): ?Site
+    {
+        if (is_null($this->site)) {
+            throw new RuntimeException('Site is not set. Please authenticate first.');
+        }
+        return $this->site;
+    }
+
+    /**
      * The default headers to send with each request.
      * This is used by the AcceptsJson trait.
      *
@@ -104,26 +145,5 @@ class Tableau extends Connector
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ];
-    }
-
-    /**
-     * The Base URL of the API.
-     */
-    public function resolveBaseUrl(): string
-    {
-        return config('tableau.url') . '/api/' . VersionService::getAPIVersion();
-    }
-
-    /**
-     * Returns the site connected to.
-     *
-     * @return Site|null
-     */
-    public function getSite(): ?Site
-    {
-        if (is_null($this->site)) {
-            throw new RuntimeException('Site is not set. Please authenticate first.');
-        }
-        return $this->site;
     }
 }
