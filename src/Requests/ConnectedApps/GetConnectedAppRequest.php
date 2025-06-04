@@ -48,6 +48,6 @@ class GetConnectedAppRequest extends TableauRequest
      */
     public function createDtoFromResponse(Response $response): ConnectedApp
     {
-        return ConnectedApp::fromArray($response->json());
+        return ConnectedApp::fromArray($response->json()['connectedApplication']);
     }
 }

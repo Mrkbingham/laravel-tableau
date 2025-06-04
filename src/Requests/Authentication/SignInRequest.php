@@ -31,7 +31,7 @@ class SignInRequest extends Request implements HasBody
      *
      * @return void
      */
-    public function __construct(protected JWTAuthentication|PATAuthentication|UsernameAuthentication $auth) {
+    public function __construct(protected readonly JWTAuthentication|PATAuthentication|UsernameAuthentication $auth) {
         //
     }
 
