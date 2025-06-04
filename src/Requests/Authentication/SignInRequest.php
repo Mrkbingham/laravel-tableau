@@ -7,10 +7,10 @@ use InterWorks\Tableau\Data\Authentication\JWTAuthentication;
 use InterWorks\Tableau\Data\Authentication\PATAuthentication;
 use InterWorks\Tableau\Data\Authentication\UsernameAuthentication;
 use InvalidArgumentException;
+use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
-use Saloon\Contracts\Body\HasBody;
 use Saloon\Traits\Body\HasJsonBody;
 
 class SignInRequest extends Request implements HasBody
@@ -19,13 +19,26 @@ class SignInRequest extends Request implements HasBody
 
     /**
      * The HTTP method of the request
+     *
+     * @var Method
      */
     protected Method $method = Method::POST;
 
-    public function __construct(protected JWTAuthentication|PATAuthentication|UsernameAuthentication $auth) {}
+    /**
+     * The request's constructor
+     *
+     * @param JWTAuthentication|PATAuthentication|UsernameAuthentication $auth The authentication method to use.
+     *
+     * @return void
+     */
+    public function __construct(protected JWTAuthentication|PATAuthentication|UsernameAuthentication $auth) {
+        //
+    }
 
     /**
      * The endpoint for the request
+     *
+     * @return string
      */
     public function resolveEndpoint(): string
     {
@@ -33,9 +46,30 @@ class SignInRequest extends Request implements HasBody
     }
 
     /**
+     * Create a DTO from the response
+     *
+     * @param Response $response The response from the request.
+     *
+     * @return mixed
+     */
+    public function createDtoFromResponse(Response $response): mixed
+    {
+        $data = $response->json();
+        $credentials = $data['credentials'];
+
+        return new AuthenticationResponse(
+            token: $credentials['token'],
+            siteId: $credentials['site']['id'],
+            siteContentUrl: $credentials['site']['contentUrl'],
+            userId: $credentials['user']['id'],
+            timeToExpiration: $credentials['estimatedTimeToExpiration'] ?? null,
+        );
+    }
+
+    /**
      * The body of the request
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException When an unsupported authentication type is provided.
      *
      * @return array<string, mixed>
      */
@@ -112,7 +146,8 @@ class SignInRequest extends Request implements HasBody
     /**
      * Add impersonate user to credentials if specified
      *
-     * @param array<string, mixed> $credentials
+     * @param array<string, mixed> $credentials The credentials array to modify.
+     *
      * @return array<string, mixed>
      */
     private function addImpersonateUser(array $credentials): array
@@ -124,25 +159,5 @@ class SignInRequest extends Request implements HasBody
         }
 
         return $credentials;
-    }
-
-    /**
-     * Create a DTO from the response
-     *
-     * @param Response $response
-     * @return mixed
-     */
-    public function createDtoFromResponse(Response $response): mixed
-    {
-        $data = $response->json();
-        $credentials = $data['credentials'];
-
-        return new AuthenticationResponse(
-            token: $credentials['token'],
-            siteId: $credentials['site']['id'],
-            siteContentUrl: $credentials['site']['contentUrl'],
-            userId: $credentials['user']['id'],
-            timeToExpiration: $credentials['estimatedTimeToExpiration'] ?? null,
-        );
     }
 }

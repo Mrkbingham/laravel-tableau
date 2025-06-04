@@ -18,6 +18,13 @@ class TableauRequest extends Request
         return '';
     }
 
+    /**
+     * Boot method to set the URL for the request. This method is called before the request is sent and allows for dynamic URL resolution.
+     *
+     * @param PendingRequest $pendingRequest The pending request instance.
+     *
+     * @return void
+     */
     public function boot(PendingRequest $pendingRequest): void
     {
         $connector = $pendingRequest->getConnector();

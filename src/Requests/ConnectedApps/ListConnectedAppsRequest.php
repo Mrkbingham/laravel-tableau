@@ -1,11 +1,11 @@
 <?php
 
-namespace InterWorks\Tableau\Requests\Views;
+namespace InterWorks\Tableau\Requests\ConnectedApps;
 
+use InterWorks\Tableau\Requests\TableauRequest;
 use Saloon\Enums\Method;
-use Saloon\Http\Request;
 
-class QueryViewsForSiteRequest extends Request
+class ListConnectedAppsRequest extends TableauRequest
 {
     /**
      * The HTTP method of the request
@@ -30,6 +30,6 @@ class QueryViewsForSiteRequest extends Request
      */
     public function resolveEndpoint(): string
     {
-        return '/sites/:siteId/views';
+        return "/sites/:siteId/connected-apps/direct-trust";
     }
 }

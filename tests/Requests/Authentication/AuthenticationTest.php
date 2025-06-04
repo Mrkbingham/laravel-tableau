@@ -6,7 +6,6 @@ use InterWorks\Tableau\Facades\TableauAPI;
 use InterWorks\Tableau\Requests\Authentication\SignInRequest;
 use InterWorks\Tableau\Requests\Views\QueryViewsForSiteRequest;
 use InterWorks\Tableau\Tableau;
-use InterWorks\Tableau\TableauAuthenticator;
 
 describe('AuthenticationTest', function () {
     test('connector can authenticate with username and password', function () {
