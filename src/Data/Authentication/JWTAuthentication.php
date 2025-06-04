@@ -1,6 +1,6 @@
 <?php
 
-namespace InterWorks\Tableau\Data\Auth;
+namespace InterWorks\Tableau\Data\Authentication;
 
 class JWTAuthentication
 {
