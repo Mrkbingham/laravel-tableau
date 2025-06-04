@@ -1,0 +1,19 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Date": "Wed, 04 Jun 2025 21:41:27 GMT",
+        "Server": "Tableau",
+        "Content-Type": "application\/json;charset=utf-8",
+        "Content-Length": "267",
+        "Vary": "Accept-Encoding",
+        "X-Tableau": "Tableau Server",
+        "P3P": "CP=\"NON\"",
+        "X-UA-Compatible": "IE=Edge",
+        "X-Content-Type-Options": "nosniff",
+        "X-XSS-Protection": "1; mode=block",
+        "Referrer-Policy": "no-referrer-when-downgrade",
+        "Content-Security-Policy-Report-Only": "connect-src * https:\/\/*.tiles.mapbox.com https:\/\/api.mapbox.com; default-src blob:; font-src * data:; frame-src * data: tableau-desktop:; img-src * data: blob:; object-src data:; report-uri \/vizql\/csp-report; script-src * blob: 'wasm-unsafe-eval'; style-src * 'unsafe-inline'"
+    },
+    "data": "{\"connectedApplication\":{\"secret\":[{\"id\":\"483518ba-feb5-3ebe-aa2a-028b2e851a30\",\"createdAt\":\"2023-06-16T20:02:29Z\"}],\"name\":\"curator__2\",\"enabled\":true,\"clientId\":\"7c68a315-86d1-3174-979d-cfb4c6af8ed8\",\"createdAt\":\"2023-06-16T20:02:28Z\",\"unrestrictedEmbedding\":true}}",
+    "context": []
+}
