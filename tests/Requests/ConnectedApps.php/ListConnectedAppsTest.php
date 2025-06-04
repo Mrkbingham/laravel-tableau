@@ -14,24 +14,16 @@ describe('ListConnectedAppsTest', function () {
     test('can list connected apps ', function () {
         $tableau = new Tableau(AuthType::PAT);
 
-        $mockClient = new MockClient([
-            ListConnectedAppsRequest::class => new TableauFixture('connected-apps/list-connected-apps')
-        ]);
-
         $listConnectedAppsRequest = new ListConnectedAppsRequest();
-        $response = $tableau->send($listConnectedAppsRequest, $mockClient);
+        $response = $tableau->send($listConnectedAppsRequest);
         expect($response->status())->toBe(200);
     });
 
     test('can parse connected apps response into DTOs', function () {
         $tableau = new Tableau(AuthType::PAT);
 
-        $mockClient = new MockClient([
-            ListConnectedAppsRequest::class => new TableauFixture('connected-apps/list-connected-apps')
-        ]);
-
         $listConnectedAppsRequest = new ListConnectedAppsRequest();
-        $response = $tableau->send($listConnectedAppsRequest, $mockClient);
+        $response = $tableau->send($listConnectedAppsRequest);
 
         // Parse the response into DTOs
         $connectedAppsCollection = $response->dto();
