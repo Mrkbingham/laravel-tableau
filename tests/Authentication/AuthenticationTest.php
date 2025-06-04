@@ -23,4 +23,12 @@ describe('AuthenticationTest', function () {
         $response = $tableau->send($signInRequest);
         expect($response->status())->toBe(200);
     });
+
+    test('connector can authenticate with JWT', function () {
+        $tableau = new Tableau(AuthType::JWT);
+
+        $signInRequest = new SignInRequest($tableau->getAuth());
+        $response = $tableau->send($signInRequest);
+        expect($response->status())->toBe(200);
+    });
 });
