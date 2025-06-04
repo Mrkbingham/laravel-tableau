@@ -6,7 +6,7 @@ use Saloon\Http\Faking\Fixture;
 
 use function Pest\Faker\fake;
 
-class TableauAuthFixture extends Fixture
+class TableauFixture extends Fixture
 {
     protected function defineName(): string
     {
@@ -24,7 +24,8 @@ class TableauAuthFixture extends Fixture
     {
         return [
             'token' => 'REDACTED',
-            'id' => fake()->uuid,
+            'id' => fn() => fake()->uuid,
+            'clientId' => fn() => fake()->uuid,
         ];
     }
 
