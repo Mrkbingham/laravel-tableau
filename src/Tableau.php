@@ -2,15 +2,20 @@
 
 namespace InterWorks\Tableau;
 
+use InterWorks\Tableau\Data\Authentication\JWTAuthentication;
+use InterWorks\Tableau\Data\Authentication\PATAuthentication;
+use InterWorks\Tableau\Data\Authentication\UsernameAuthentication;
+use InterWorks\Tableau\Data\Site;
+use InterWorks\Tableau\Enums\AuthType;
+use InterWorks\Tableau\Requests\Authentication\SignInRequest;
 use InterWorks\Tableau\Services\VersionService;
+use RuntimeException;
 use Saloon\Contracts\Authenticator;
-use Saloon\Helpers\OAuth2\OAuthConfig;
-use Saloon\Http\Auth\HeaderAuthenticator;
 use Saloon\Http\Connector;
+use Saloon\Http\PendingRequest;
 use Saloon\Traits\OAuth2\AuthorizationCodeGrant;
 use Saloon\Traits\Plugins\AcceptsJson;
 use Saloon\Traits\Plugins\HasTimeout;
-use InterWorks\Tableau\TableauAuthenticator;
 
 class Tableau extends Connector
 {
@@ -24,17 +29,71 @@ class Tableau extends Connector
     protected int $requestTimeout = 120;
 
     /** @var string The auth token for the connector. */
-    protected string $token = '';
+    protected ?string $token = null;
 
-    public function __construct(
-        protected readonly string $siteContentUrl = '',
-        protected readonly string $username = '',
-        protected readonly string $password = '',
-    ) {}
+    /** @var Site The site connected to. */
+    protected ?Site $site = null;
 
-    protected function defaultAuth(): ?Authenticator
+    public function __construct(protected AuthType $authType) {}
+
+    /**
+     * Authenticate the request with an authenticator.
+     *
+     * @return $this
+     */
+    public function authenticate(Authenticator $authenticator): static
     {
-        return new TableauAuthenticator();
+        // If we're not authenticated (and not _trying_ to authenticate), we need to authenticate first.
+        if (empty($this->token) ) {
+            // Make a request to the Authentication endpoint
+            $signInResponse = $this->send(new SignInRequest($this->getAuth()))->dto();
+            $this->site = new Site($signInResponse->siteContentUrl, $signInResponse->siteId);
+            $this->token = $signInResponse->token;
+        }
+
+        $this->authenticator = $authenticator;
+
+        return $this;
+    }
+
+    /**
+     * Gets the authentication type for the connector.
+     *
+     * @return JWTAuthentication|PATAuthentication|UsernameAuthentication
+     */
+    public function getAuth(): JWTAuthentication|PATAuthentication|UsernameAuthentication
+    {
+        return match ($this->getAuthType()) {
+            AuthType::JWT => new JWTAuthentication(),
+            AuthType::PAT => new PATAuthentication(
+                personalAccessTokenName: config('tableau.credentials.pat_name'),
+                personalAccessTokenSecret: config('tableau.credentials.pat_secret')
+            ),
+            AuthType::USERNAME => new UsernameAuthentication(
+                username: config('tableau.credentials.username'),
+                password: config('tableau.credentials.password')
+            ),
+        };
+    }
+
+    /**
+     * Gets the authentication type for the connector.
+     *
+     * @return AuthType
+     */
+    public function getAuthType(): AuthType
+    {
+        return $this->authType;
+    }
+
+    /**
+     * Gets a token for the connector.
+     *
+     * @return string|null
+     */
+    public function getToken(): ?string
+    {
+        return $this->token;
     }
 
     /**
@@ -57,5 +116,18 @@ class Tableau extends Connector
     public function resolveBaseUrl(): string
     {
         return config('tableau.url') . '/api/' . VersionService::getAPIVersion();
+    }
+
+    /**
+     * Returns the site connected to.
+     *
+     * @return Site|null
+     */
+    public function getSite(): ?Site
+    {
+        if (is_null($this->site)) {
+            throw new RuntimeException('Site is not set. Please authenticate first.');
+        }
+        return $this->site;
     }
 }

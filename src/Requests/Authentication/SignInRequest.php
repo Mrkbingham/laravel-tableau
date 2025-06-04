@@ -1,11 +1,11 @@
 <?php
 
-namespace InterWorks\Tableau\Requests;
+namespace InterWorks\Tableau\Requests\Authentication;
 
-use InterWorks\Tableau\Data\Auth\AuthenticationResponse;
-use InterWorks\Tableau\Data\Auth\JWTAuthentication;
-use InterWorks\Tableau\Data\Auth\PATAuthentication;
-use InterWorks\Tableau\Data\Auth\UsernameAuthentication;
+use InterWorks\Tableau\Data\Authentication\AuthenticationResponse;
+use InterWorks\Tableau\Data\Authentication\JWTAuthentication;
+use InterWorks\Tableau\Data\Authentication\PATAuthentication;
+use InterWorks\Tableau\Data\Authentication\UsernameAuthentication;
 use InvalidArgumentException;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;

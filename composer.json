@@ -30,6 +30,7 @@
         "orchestra/testbench": "^9.14",
         "pestphp/pest": "^2.34",
         "pestphp/pest-plugin-arch": "^2.7",
+        "pestphp/pest-plugin-faker": "^2.0",
         "pestphp/pest-plugin-laravel": "^2.3",
         "phpstan/phpstan": "^2.1",
         "slevomat/coding-standard": "~8.0",
