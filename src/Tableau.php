@@ -10,7 +10,7 @@ use InterWorks\Tableau\Enums\AuthType;
 use InterWorks\Tableau\Requests\Authentication\SignInRequest;
 use InterWorks\Tableau\Services\VersionService;
 use RuntimeException;
-use Saloon\Contracts\Authenticator;
+use Saloon\Http\Auth\HeaderAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\PendingRequest;
 use Saloon\Traits\OAuth2\AuthorizationCodeGrant;
@@ -36,24 +36,20 @@ class Tableau extends Connector
 
     public function __construct(protected AuthType $authType) {}
 
-    /**
-     * Authenticate the request with an authenticator.
-     *
-     * @return $this
-     */
-    public function authenticate(Authenticator $authenticator): static
+    public function boot(PendingRequest $pendingRequest): void
     {
-        // If we're not authenticated (and not _trying_ to authenticate), we need to authenticate first.
-        if (empty($this->token) ) {
-            // Make a request to the Authentication endpoint
-            $signInResponse = $this->send(new SignInRequest($this->getAuth()))->dto();
-            $this->site = new Site($signInResponse->siteContentUrl, $signInResponse->siteId);
-            $this->token = $signInResponse->token;
+        // If we've already authenticated, or are authenticating, we can skip this
+        if ($this->getToken() || $pendingRequest->getRequest() instanceof SignInRequest) {
+            return;
         }
 
-        $this->authenticator = $authenticator;
+        // Authenticate the request by sending a SignInRequest.
+        $signInResponse = $this->send(new SignInRequest($this->getAuth()))->dto();
+        $this->site = new Site($signInResponse->siteContentUrl, $signInResponse->siteId);
+        $this->token = $signInResponse->token;
 
-        return $this;
+        // Add the token to the header
+        $pendingRequest->authenticate(new HeaderAuthenticator($this->token, 'X-Tableau-Auth'));
     }
 
     /**
