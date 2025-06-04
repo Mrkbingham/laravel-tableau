@@ -2,8 +2,11 @@
 
 namespace InterWorks\Tableau\Requests\ConnectedApps;
 
+use Illuminate\Support\Collection;
+use InterWorks\Tableau\Data\ConnectedApps\ConnectedAppsCollection;
 use InterWorks\Tableau\Requests\TableauRequest;
 use Saloon\Enums\Method;
+use Saloon\Http\Response;
 
 class ListConnectedAppsRequest extends TableauRequest
 {
@@ -31,5 +34,17 @@ class ListConnectedAppsRequest extends TableauRequest
     public function resolveEndpoint(): string
     {
         return "/sites/:siteId/connected-apps/direct-trust";
+    }
+
+    /**
+     * Create a DTO from the response
+     *
+     * @param Response $response The response from the request.
+     *
+     * @return mixed
+     */
+    public function createDtoFromResponse(Response $response): ConnectedAppsCollection
+    {
+        return ConnectedAppsCollection::fromArray($response->json());
     }
 }
