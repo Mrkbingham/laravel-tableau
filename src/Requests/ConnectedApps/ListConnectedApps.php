@@ -2,13 +2,13 @@
 
 namespace InterWorks\Tableau\Requests\ConnectedApps;
 
-use InterWorks\Tableau\Data\ConnectedApps\ConnectedApp;
-use InterWorks\Tableau\Data\ConnectedApps\ConnectedAppSecret;
+use Illuminate\Support\Collection;
+use InterWorks\Tableau\Data\ConnectedApps\ConnectedAppsCollection;
 use InterWorks\Tableau\Requests\TableauRequest;
 use Saloon\Enums\Method;
 use Saloon\Http\Response;
 
-class GetConnectedAppRequest extends TableauRequest
+class ListConnectedApps extends TableauRequest
 {
     /**
      * The HTTP method of the request
@@ -20,14 +20,9 @@ class GetConnectedAppRequest extends TableauRequest
     /**
      * The request's constructor
      *
-     * @param string $appId The ID of the connected app to retrieve.
-     *
      * @return void
      */
-    public function __construct(
-        protected readonly string $appId,
-        protected readonly string $secretId,
-    ) {
+    public function __construct() {
         //
     }
 
@@ -38,7 +33,7 @@ class GetConnectedAppRequest extends TableauRequest
      */
     public function resolveEndpoint(): string
     {
-        return "/sites/:siteId/connected-apps/direct-trust/{$this->appId}/secrets/{$this->secretId}";
+        return "/sites/:siteId/connected-apps/direct-trust";
     }
 
     /**
@@ -48,8 +43,8 @@ class GetConnectedAppRequest extends TableauRequest
      *
      * @return mixed
      */
-    public function createDtoFromResponse(Response $response): ConnectedAppSecret
+    public function createDtoFromResponse(Response $response): ConnectedAppsCollection
     {
-        return ConnectedAppSecret::fromArray($response->json());
+        return ConnectedAppsCollection::fromArray($response->json());
     }
 }
