@@ -13,7 +13,7 @@ use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
-class SignInRequest extends Request implements HasBody
+class SignIn extends Request implements HasBody
 {
     use HasJsonBody;
 
