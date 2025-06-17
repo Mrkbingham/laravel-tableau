@@ -1,17 +1,14 @@
 <?php
 
-use InterWorks\Tableau\Data\Authentication\PATAuthentication;
 use InterWorks\Tableau\Enums\AuthType;
-use InterWorks\Tableau\Facades\TableauAPI;
-use InterWorks\Tableau\Requests\Authentication\SignInRequest;
-use InterWorks\Tableau\Requests\Views\QueryViewsForSiteRequest;
+use InterWorks\Tableau\Requests\Authentication\SignIn;
 use InterWorks\Tableau\Tableau;
 
 describe('AuthenticationTest', function () {
     test('connector can authenticate with username and password', function () {
         $tableau = new Tableau(AuthType::USERNAME);
 
-        $signInRequest = new SignInRequest($tableau->getAuth());
+        $signInRequest = new SignIn($tableau->getAuth());
         $response = $tableau->send($signInRequest);
         expect($response->status())->toBe(200);
     });
@@ -19,7 +16,7 @@ describe('AuthenticationTest', function () {
     test('connector can authenticate with Personal Access Token', function () {
         $tableau = new Tableau(AuthType::PAT);
 
-        $signInRequest = new SignInRequest($tableau->getAuth());
+        $signInRequest = new SignIn($tableau->getAuth());
         $response = $tableau->send($signInRequest);
         expect($response->status())->toBe(200);
     });
@@ -27,7 +24,7 @@ describe('AuthenticationTest', function () {
     test('connector can authenticate with JWT', function () {
         $tableau = new Tableau(AuthType::JWT);
 
-        $signInRequest = new SignInRequest($tableau->getAuth());
+        $signInRequest = new SignIn($tableau->getAuth());
         $response = $tableau->send($signInRequest);
         expect($response->status())->toBe(200);
     });

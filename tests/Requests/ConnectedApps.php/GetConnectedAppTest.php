@@ -3,7 +3,7 @@
 use InterWorks\Tableau\Data\ConnectedApps\ConnectedApp;
 use InterWorks\Tableau\Data\ConnectedApps\ConnectedAppSecret;
 use InterWorks\Tableau\Enums\AuthType;
-use InterWorks\Tableau\Requests\ConnectedApps\GetConnectedAppRequest;
+use InterWorks\Tableau\Requests\ConnectedApps\GetConnectedApp;
 use InterWorks\Tableau\Tableau;
 use InterWorks\Tableau\Tests\Fixtures\TableauFixture;
 use Saloon\Http\Faking\MockClient;
@@ -16,7 +16,7 @@ describe('GetConnectedAppTest', function () {
     test('can get a connected app by ID', function () {
         $tableau = new Tableau(AuthType::PAT);
 
-        $getConnectedAppRequest = new GetConnectedAppRequest($this->connectedAppId);
+        $getConnectedAppRequest = new GetConnectedApp($this->connectedAppId);
         $response = $tableau->send($getConnectedAppRequest);
 
         expect($getConnectedAppRequest->resolveEndpoint())->toBe("/sites/:siteId/connected-apps/direct-trust/{$this->connectedAppId}");
@@ -26,7 +26,7 @@ describe('GetConnectedAppTest', function () {
     test('can parse single connected app response into DTO', function () {
         $tableau = new Tableau(AuthType::PAT);
 
-        $getConnectedAppRequest = new GetConnectedAppRequest($this->connectedAppId);
+        $getConnectedAppRequest = new GetConnectedApp($this->connectedAppId);
         $response = $tableau->send($getConnectedAppRequest);
 
         // Parse the response into DTO

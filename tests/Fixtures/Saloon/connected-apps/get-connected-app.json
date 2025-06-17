@@ -19,13 +19,13 @@
             "secret": [
                 {
                     "id": "483518ba-feb5-3ebe-aa2a-028b2e851a30",
-                    "createdAt": "2023-06-16T20: 02: 29Z"
+                    "createdAt": "2023-06-16T20:02:29Z"
                 }
             ],
             "name": "test_app__1",
             "enabled": true,
             "clientId": "7c68a315-86d1-3174-979d-cfb4c6af8ed8",
-            "createdAt": "2023-06-16T20: 02: 28Z",
+            "createdAt": "2023-06-16T20:02:28Z",
             "unrestrictedEmbedding": true
         }
     },

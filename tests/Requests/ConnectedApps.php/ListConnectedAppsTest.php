@@ -5,7 +5,7 @@ use InterWorks\Tableau\Data\ConnectedApps\ConnectedApplication;
 use InterWorks\Tableau\Data\ConnectedApps\ConnectedAppSecret;
 use InterWorks\Tableau\Data\ConnectedApps\ConnectedAppsCollection;
 use InterWorks\Tableau\Enums\AuthType;
-use InterWorks\Tableau\Requests\ConnectedApps\ListConnectedAppsRequest;
+use InterWorks\Tableau\Requests\ConnectedApps\ListConnectedApps;
 use InterWorks\Tableau\Tableau;
 use InterWorks\Tableau\Tests\Fixtures\TableauFixture;
 use Saloon\Http\Faking\MockClient;
@@ -15,10 +15,10 @@ describe('ListConnectedAppsTest', function () {
         $tableau = new Tableau(AuthType::PAT);
 
         $mockClient = new MockClient([
-            ListConnectedAppsRequest::class => new TableauFixture('connected-apps/list-connected-apps')
+            ListConnectedApps::class => new TableauFixture('connected-apps/list-connected-apps')
         ]);
 
-        $listConnectedAppsRequest = new ListConnectedAppsRequest();
+        $listConnectedAppsRequest = new ListConnectedApps();
         $response = $tableau->send($listConnectedAppsRequest, $mockClient);
         expect($response->status())->toBe(200);
     });
@@ -26,7 +26,7 @@ describe('ListConnectedAppsTest', function () {
     test('can parse connected apps response into DTOs', function () {
         $tableau = new Tableau(AuthType::PAT);
 
-        $listConnectedAppsRequest = new ListConnectedAppsRequest();
+        $listConnectedAppsRequest = new ListConnectedApps();
         $response = $tableau->send($listConnectedAppsRequest);
 
         // Parse the response into DTOs
