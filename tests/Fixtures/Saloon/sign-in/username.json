@@ -14,6 +14,17 @@
         "Referrer-Policy": "no-referrer-when-downgrade",
         "Content-Security-Policy-Report-Only": "connect-src * https:\/\/*.tiles.mapbox.com https:\/\/api.mapbox.com; default-src blob:; font-src * data:; frame-src * data: tableau-desktop:; img-src * data: blob:; object-src data:; report-uri \/vizql\/csp-report; script-src * blob: 'wasm-unsafe-eval'; style-src * 'unsafe-inline'"
     },
-    "data": "{\"credentials\":{\"site\":{\"id\":\"48d5424e-a7d1-386e-a765-b610aa62931e\",\"contentUrl\":\"\"},\"user\":{\"id\":\"48d5424e-a7d1-386e-a765-b610aa62931e\"},\"token\":\"REDACTED\"}}",
+    "data": {
+        "credentials": {
+            "site": {
+                "id": "48d5424e-a7d1-386e-a765-b610aa62931e",
+                "contentUrl": ""
+            },
+            "user": {
+                "id": "48d5424e-a7d1-386e-a765-b610aa62931e"
+            },
+            "token": "REDACTED"
+        }
+    },
     "context": []
 }
