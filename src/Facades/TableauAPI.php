@@ -16,6 +16,6 @@ class TableauAPI extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \InterWorks\Tableau\TableauAPI::class;
+        return \InterWorks\Tableau\Tableau::class;
     }
 }

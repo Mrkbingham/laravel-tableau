@@ -54,21 +54,12 @@ class VersionService
      *
      * Since this call happens prior to authentication, use the HTTP facade, and not the HttpClient.
      *
-     * @return string
+     * @return ?string
      */
-    public static function fetchAPIVersionFromTableau(): string
+    public static function fetchAPIVersionFromTableau(): ?string
     {
-        $tableauURL = Config::get('tableau.url');
-        // 2.4 is the earliest version that supports the serverinfo endpoint
-        $response = Http::get($tableauURL . '/api/2.4/serverinfo');
-
-        if (!$response->successful()) {
-            $errorHandler = new ErrorHandler($response);
-            return $errorHandler->outputMessage();
-        } else {
-            $responseData = ResponseParser::parse($response);
-            return $responseData['serverInfo']['restApiVersion'];
-        }
+        $responseData = ServerInfoService::fetchServerInfo();
+        return $responseData['serverInfo']['restApiVersion'];
     }
 
     /**

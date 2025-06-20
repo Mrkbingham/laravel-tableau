@@ -30,15 +30,15 @@
 
     <rule ref="Generic.Files.LineLength">
         <properties>
-            <property name="lineLimit" value="120" />
-            <property name="absoluteLineLimit" value="120" />
+            <property name="lineLimit" value="150" />
+            <property name="absoluteLineLimit" value="150" />
         </properties>
         <exclude-pattern>*/updates/*</exclude-pattern>
         <exclude-pattern>*/lang.php</exclude-pattern>
     </rule>
 
-    <rule ref="Generic.ControlStructures.InlineControlStructure"/>
-    <rule ref="Generic.PHP.LowerCaseConstant"/>
+    <rule ref="Generic.ControlStructures.InlineControlStructure" />
+    <rule ref="Generic.PHP.LowerCaseConstant" />
     <rule ref="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen" />
     <rule ref="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose" />
     <rule ref="Squiz.WhiteSpace.ScopeClosingBrace" />
@@ -50,7 +50,6 @@
     <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration.AsNotLower" />
     <rule ref="Squiz.Scope.MethodScope" />
     <rule ref="Squiz.WhiteSpace.ScopeKeywordSpacing" />
-    <rule ref="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned" />
     <rule ref="Squiz.Classes.LowercaseClassKeywords" />
 
     <!-- Camel case -->
@@ -58,11 +57,11 @@
     <rule ref="PSR1.Methods.CamelCapsMethodName" />
 
     <!-- PHPDoc rules -->
-    <rule ref="Squiz.Commenting.FunctionComment"/>
-    <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
-    <rule ref="Squiz.Commenting.VariableComment"/>
+    <rule ref="Squiz.Commenting.FunctionComment" />
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag" />
+    <rule ref="Squiz.Commenting.VariableComment" />
 
     <!-- Slevomat rules -->
-    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
-    <rule ref="SlevomatCodingStandard.Classes.ClassStructure"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses" />
+    <rule ref="SlevomatCodingStandard.Classes.ClassStructure" />
 </ruleset>

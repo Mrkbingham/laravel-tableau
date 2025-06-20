@@ -3,10 +3,13 @@
 namespace InterWorks\Tableau\Http;
 
 use Exception;
+use GuzzleHttp\Exception\ConnectException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use InterWorks\Tableau\Auth\TableauAuth;
+use InterWorks\Tableau\Exceptions\APIException;
 use InterWorks\Tableau\Http\ErrorHandler;
 use InterWorks\Tableau\Services\VersionService;
 
@@ -74,6 +77,8 @@ class HttpClient
      * @param integer  $maxRetries The maximum number of retries.
      * @param integer  $delay      The delay between retries in milliseconds.
      *
+     * @throws APIException When connection fails or other network errors occur
+     *
      * @return Response
      */
     public function callWithRetry(callable $callback, int $maxRetries = 3, int $delay = 5000)
@@ -81,27 +86,32 @@ class HttpClient
         $attempts = 0;
 
         do {
-            $response = $callback();
-            $attempts++;
+            try {
+                $response = $callback();
+                $attempts++;
 
-            // If the response is successful, return it
-            if ($response->successful()) {
-                return $response;
+                // If the response is successful, return it
+                if ($response->successful()) {
+                    return $response;
+                }
+
+                // If the response is not successful, check to see if it's a 401002 error
+                $errorHandler = new ErrorHandler($response);
+                if ($errorHandler->errorCode() !== 401002) {
+                    return $response;
+                }
+
+                // Invalidate the token and re-authenticate
+                $this->auth->setTokenExpiration(0);
+                $this->auth->authenticate();
+
+                // Delay before retrying (microseconds are 1 millionth of a second)
+                $microSeconds = $delay * 500;
+                usleep($microSeconds);
+            } catch (ConnectionException | ConnectException $e) {
+                // Convert connection exceptions to APIException for consistent error handling
+                throw new APIException('Connection error: ' . $e->getMessage(), 0, $e);
             }
-
-            // If the response is not successful, check to see if it's a 401002 error
-            $errorHandler = new ErrorHandler($response);
-            if ($errorHandler->errorCode() !== 401002) {
-                return $response;
-            }
-
-            // Invalidate the token and re-authenticate
-            $this->auth->setTokenExpiration(0);
-            $this->auth->authenticate();
-
-            // Delay before retrying (microseconds are 1 millionth of a second)
-            $microSeconds = $delay * 1000;
-            usleep($microSeconds);
         } while ($attempts < $maxRetries);
 
         // Return the last response if all retries fail
@@ -177,7 +187,7 @@ class HttpClient
         // Make sure the endpoint is valid
         $this->validateEndpoint($endpoint);
 
-        // Make sure the first array key is NOT 'tsRequest'
+        // Make sure the first array key is NOT 'tsRequest' - this is a common error when using the API
         if (array_key_first($body) === 'tsRequest') {
             throw new Exception('The first key in the body array cannot be "tsRequest"');
         }

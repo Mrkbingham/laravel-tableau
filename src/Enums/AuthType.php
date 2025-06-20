@@ -5,4 +5,5 @@ namespace InterWorks\Tableau\Enums;
 enum AuthType: string {
     case PAT = 'pat';
     case USERNAME = 'username';
+    case JWT = 'jwt';
 }
